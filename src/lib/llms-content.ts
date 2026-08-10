@@ -1,24 +1,21 @@
 import {
   artists,
   djs,
-  glance,
   pricing,
   schedule,
   seo,
   site,
   siteUrl,
-  stats,
   testimonials,
   venue,
 } from '../data/site';
 
 function formatSchedule() {
   return schedule
-    .map((day) => {
-      const items = day.items
-        .map((item) => `- ${item.time}: ${item.title} — ${item.detail}`)
-        .join('\n');
-      return `### ${day.day}\n${items}`;
+    .map((item, index) => {
+      const subtitle = 'subtitle' in item && item.subtitle ? `\n${item.subtitle}` : '';
+      const details = item.details.map((detail) => `  ${detail}`).join('\n');
+      return `${index + 1}. ${item.title}${subtitle}\n   ${item.time} · ${item.day} · ${item.tag}\n${details}`;
     })
     .join('\n\n');
 }
@@ -33,15 +30,7 @@ function formatPricing() {
 }
 
 function formatDjs() {
-  return djs.map((dj) => `- ${dj.name} — ${dj.role}`).join('\n');
-}
-
-function formatStats() {
-  return stats.map((stat) => `- ${stat.value}${stat.suffix} ${stat.label}`).join('\n');
-}
-
-function formatGlance() {
-  return glance.map((item) => `- **${item.title}**: ${item.body}`).join('\n');
+  return djs.map((dj) => `- ${dj.name} — ${dj.role}\n  ${dj.bio}`).join('\n');
 }
 
 function formatTestimonials() {
@@ -115,17 +104,9 @@ DJs
 ===
 ${formatDjs()}
 
-STATS
-=====
-${formatStats()}
-
 SCHEDULE
 ========
 ${formatSchedule()}
-
-EVENT AT A GLANCE
-=================
-${formatGlance()}
 
 VENUE
 =====

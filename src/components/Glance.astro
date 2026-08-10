@@ -1,5 +1,5 @@
 ---
-import { glance, site } from '../data/site';
+import { copy, glance, site } from '../data/site';
 ---
 
 <section class="section-pad bg-surface">
@@ -7,7 +7,7 @@ import { glance, site } from '../data/site';
     <div class="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <h2 data-reveal="left" class="font-display text-4xl text-white md:text-6xl">Event at a glance</h2>
       <p data-reveal="right" class="max-w-lg text-white/70">
-        Everything you need for a complete tango weekend — under one roof, with one passionate community.
+        {copy.glanceSubhead}
       </p>
     </div>
 

@@ -1,12 +1,12 @@
 ---
-import { site } from '../data/site';
+import { copy, site } from '../data/site';
 ---
 
 <section id="contact" class="section-pad bg-surface">
   <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
     <div data-reveal="left">
-      <h2 class="font-display text-4xl text-white md:text-6xl">Get in touch</h2>
-      <p class="mt-4 text-lg text-white/70">We'd love to hear from you!</p>
+      <h2 class="font-display text-4xl text-white md:text-6xl">{copy.contactHeadline}</h2>
+      <p class="mt-4 text-lg text-white/70">{copy.contactIntro}</p>
 
       <ul class="mt-10 space-y-4 text-lg">
         <li>
@@ -25,10 +25,10 @@ import { site } from '../data/site';
 
     <div data-reveal="right" class="card-dark flex flex-col justify-center">
       <p class="text-white/70">
-        Ready to join us? Complete the registration form above.
+        {copy.contactCard}
       </p>
       <a href={site.registerUrl} class="btn-primary mt-8 w-full text-center">
-        Go to registration
+        {copy.contactCardCta}
       </a>
     </div>
   </div>
@@ -36,17 +36,17 @@ import { site } from '../data/site';
 
 <section class="bg-brand section-pad">
   <div class="mx-auto max-w-4xl text-center">
-    <h2 data-reveal="fade" class="font-display text-4xl text-black md:text-6xl">Connect with us</h2>
+    <h2 data-reveal="fade" class="font-display text-4xl text-black md:text-6xl">{copy.connectHeadline}</h2>
     <p data-reveal="fade" data-reveal-delay="100" class="mx-auto mt-6 max-w-2xl text-lg font-medium text-black/80">
-      Join dancers from across Europe for a weekend of connection, music, and movement.
+      {copy.connectCta}
     </p>
     <a
-      href={site.registerUrl}
+      href={`mailto:${site.contactEmail}`}
       data-reveal="scale"
       data-reveal-delay="200"
       class="mt-10 inline-flex rounded-full bg-black px-10 py-4 text-sm font-semibold uppercase tracking-wider text-white transition-all duration-300 hover:scale-105 hover:bg-black/80 active:scale-95"
     >
-      Register now
+      {copy.connectCtaButton}
     </a>
   </div>
 </section>

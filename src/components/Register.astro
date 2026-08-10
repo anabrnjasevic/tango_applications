@@ -1,14 +1,15 @@
 ---
 import RegistrationForm from './RegistrationForm.astro';
+import { copy } from '../data/site';
 import { googleForm } from '../data/form';
 ---
 
 <section id="register" class="section-pad bg-surface-elevated">
   <div class="mx-auto max-w-3xl">
     <div class="mb-10 text-center" data-reveal="fade">
-      <h2 class="font-display text-4xl text-white md:text-6xl">Register</h2>
+      <h2 class="font-display text-4xl text-white md:text-6xl">{copy.registerHeadline}</h2>
       <p class="mt-4 text-lg text-white/70">
-        Complete the form below to register for the weekend.
+        {copy.registerIntro}
       </p>
     </div>
 

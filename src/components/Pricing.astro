@@ -1,5 +1,5 @@
 ---
-import { pricing, site } from '../data/site';
+import { copy, pricing, site } from '../data/site';
 ---
 
 <section id="tickets" class="section-pad bg-surface">
@@ -43,7 +43,7 @@ import { pricing, site } from '../data/site';
                 : 'bg-brand text-black hover:bg-brand-light',
             ]}
           >
-            Register
+            {copy.heroCtaRegister}
           </a>
         </article>
       ))}

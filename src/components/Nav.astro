@@ -1,5 +1,5 @@
 ---
-import { site, navLinks } from '../data/site';
+import { copy, navLinks, site } from '../data/site';
 ---
 
 <header data-nav class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-md">
@@ -17,7 +17,7 @@ import { site, navLinks } from '../data/site';
     </nav>
 
     <a href={site.registerUrl} class="btn-primary text-xs md:text-sm">
-      Register
+      {copy.heroCtaRegister}
     </a>
   </div>
 </header>

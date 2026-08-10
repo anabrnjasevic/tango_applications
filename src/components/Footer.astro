@@ -1,5 +1,5 @@
 ---
-import { site } from '../data/site';
+import { copy, site } from '../data/site';
 
 const year = new Date().getFullYear();
 ---
@@ -10,7 +10,7 @@ const year = new Date().getFullYear();
       CAMINO<span class="text-brand">TANGO</span>
     </p>
     <p class="text-sm text-white/50">
-      © {year} {site.title}. Built with Astro · deploy on Vercel.
+      © {year} {site.title}. {copy.footerCredit}.
     </p>
   </div>
 </footer>

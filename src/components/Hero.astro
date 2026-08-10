@@ -1,5 +1,5 @@
 ---
-import { site } from '../data/site';
+import { copy, site } from '../data/site';
 ---
 
 <section class="relative min-h-screen overflow-hidden pt-20">
@@ -14,7 +14,7 @@ import { site } from '../data/site';
 
   <div class="relative mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl flex-col items-center justify-center px-5 pb-24 pt-16 text-center md:px-10">
     <p class="hero-enter mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-brand-light">
-      {site.date} · {site.location}
+      {site.dateShort} | {site.locationShort}
     </p>
 
     <h1 class="hero-enter hero-enter-delay-1 font-display max-w-5xl text-5xl leading-none text-white sm:text-7xl md:text-8xl lg:text-9xl">
@@ -25,16 +25,15 @@ import { site } from '../data/site';
       {site.tagline}
     </p>
 
-    <p class="hero-enter hero-enter-delay-3 mt-8 max-w-2xl text-lg text-white/75">
-      Ready to be part of it? Join us for workshops, milongas, and an unforgettable gala show with world-renowned maestros.
-    </p>
-
-    <div class="hero-enter hero-enter-delay-4 mt-10 flex flex-wrap items-center justify-center gap-4">
-      <a href={site.registerUrl} class="btn-primary">
-        Get a ticket
+    <div class="hero-enter hero-enter-delay-3 mt-10 flex flex-wrap items-center justify-center gap-4">
+      <a href="#artists" class="btn-outline">
+        {copy.heroCtaWatchVideo}
       </a>
-      <a href="#schedule" class="btn-outline">
-        View schedule
+      <a href="#schedule" class="btn-primary">
+        {copy.heroCtaProgram}
+      </a>
+      <a href={site.registerUrl} class="btn-outline">
+        {copy.heroCtaRegister}
       </a>
     </div>
   </div>
@@ -49,14 +48,14 @@ import { site } from '../data/site';
       <p class="font-display text-4xl text-black md:text-5xl">{site.date}</p>
     </div>
     <p data-reveal="fade" data-reveal-delay="100" class="max-w-xl text-lg font-medium text-black/80">
-      Don't miss Barcelona's premier tango weekend. Secure your pass before early bird pricing ends.
+      {copy.saveTheDate}
     </p>
     <a
       href={site.registerUrl}
       data-reveal="scale"
       data-reveal-delay="200"
       class="rounded-full bg-black px-8 py-3 text-sm font-semibold uppercase tracking-wider text-white transition-all duration-300 hover:scale-105 hover:bg-black/80 active:scale-95">
-      Register now
+      {copy.heroCtaRegister}
     </a>
   </div>
 </section>

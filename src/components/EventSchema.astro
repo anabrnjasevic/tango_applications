@@ -17,12 +17,12 @@ const schema = {
   url: eventUrl,
   location: {
     '@type': 'Place',
-    name: site.address,
+    name: event.venueName,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: site.address,
-      addressLocality: 'Barcelona',
-      addressCountry: 'ES',
+      streetAddress: event.streetAddress,
+      addressLocality: event.addressLocality,
+      addressCountry: event.addressCountry,
     },
   },
   organizer: {
