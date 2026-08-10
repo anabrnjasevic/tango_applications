@@ -1,0 +1,49 @@
+---
+import { artists, site } from '../data/site';
+---
+
+<section id="artists" class="section-pad bg-surface">
+  <div class="mx-auto max-w-7xl">
+    <h2 data-reveal class="font-display mb-12 max-w-3xl text-4xl leading-tight text-white md:text-6xl">
+      {artists.headline}
+    </h2>
+
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <div data-reveal="left">
+        <p class="text-lg leading-relaxed text-white/75">{artists.body}</p>
+        <p class="mt-8 inline-block border-l-4 border-brand pl-4 text-xl font-semibold text-brand-light">
+          {artists.gala}
+        </p>
+        <a data-reveal="scale" data-reveal-delay="300" href={site.registerUrl} class="btn-primary mt-10">
+          Get a ticket
+        </a>
+      </div>
+
+      <div data-reveal="right" class="group relative overflow-hidden rounded-2xl border border-white/10">
+        <img
+          src="/images/artist-feature.png"
+          alt="Carlos and Mirella performing on stage"
+          class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-105"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-6">
+          <p class="font-display text-2xl text-white">Carlos & Mirella Santos David</p>
+          <p class="text-white/70">Featured artists · Gala performance Sunday</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad bg-surface-elevated">
+  <div class="mx-auto max-w-5xl text-center">
+    <p data-reveal="fade" class="mb-4 text-sm font-semibold uppercase tracking-widest text-brand">Impact</p>
+    <h2 data-reveal data-reveal-delay="100" class="font-display text-4xl text-white md:text-5xl">Experience the maestros live</h2>
+    <p data-reveal data-reveal-delay="200" class="mx-auto mt-6 max-w-2xl text-lg text-white/70">
+      Watch Carlos & Mirella in an exclusive artist show during the Sunday gala milonga — included with full weekend and milonga passes.
+    </p>
+    <a data-reveal="scale" data-reveal-delay="300" href={site.registerUrl} class="btn-primary mt-10">
+      Reserve your spot
+    </a>
+  </div>
+</section>

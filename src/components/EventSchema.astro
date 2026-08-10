@@ -1,0 +1,49 @@
+---
+import { artists, event, pricing, seo, site, siteUrl } from '../data/site';
+
+const imageUrl = new URL(seo.ogImage, siteUrl).href;
+const eventUrl = new URL('/', siteUrl).href;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: site.title,
+  description: seo.description,
+  startDate: event.startDate,
+  endDate: event.endDate,
+  eventStatus: `https://schema.org/${event.eventStatus}`,
+  eventAttendanceMode: `https://schema.org/${event.attendanceMode}`,
+  image: imageUrl,
+  url: eventUrl,
+  location: {
+    '@type': 'Place',
+    name: site.address,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: site.address,
+      addressLocality: 'Barcelona',
+      addressCountry: 'ES',
+    },
+  },
+  organizer: {
+    '@type': 'Organization',
+    name: event.organizer.name,
+    email: event.organizer.email,
+  },
+  performer: event.performers.map((name) => ({
+    '@type': 'Person',
+    name,
+  })),
+  offers: pricing.tiers.map((tier) => ({
+    '@type': 'Offer',
+    name: tier.name,
+    price: tier.price.replace('€', ''),
+    priceCurrency: 'EUR',
+    availability: 'https://schema.org/InStock',
+    url: `${eventUrl}#tickets`,
+  })),
+  about: artists.headline,
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

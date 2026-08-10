@@ -1,0 +1,48 @@
+---
+import RegistrationForm from './RegistrationForm.astro';
+import { googleForm } from '../data/form';
+---
+
+<section id="register" class="section-pad bg-surface-elevated">
+  <div class="mx-auto max-w-3xl">
+    <div class="mb-10 text-center" data-reveal="fade">
+      <h2 class="font-display text-4xl text-white md:text-6xl">Register</h2>
+      <p class="mt-4 text-lg text-white/70">
+        Complete the form below to register for the weekend.
+      </p>
+    </div>
+
+    <div data-reveal="scale" class="card-dark">
+      <RegistrationForm />
+    </div>
+
+    <details class="mt-8 rounded-2xl border border-white/10 bg-surface-card p-6 text-white/70">
+      <summary class="cursor-pointer text-sm font-semibold uppercase tracking-wider text-white/80">
+        Prefer the Google Form?
+      </summary>
+      <p class="mt-4 text-sm">
+        You can also use the embedded Google Form below — submissions go to the same place.
+      </p>
+      <iframe
+        src={googleForm.embedUrl}
+        width="100%"
+        height="1200"
+        class="mt-4 min-h-[70vh] rounded-xl border border-white/10 bg-white"
+        title="Camino Tango registration form"
+        loading="lazy"
+      >
+        Loading form…
+      </iframe>
+      <p class="mt-4 text-center text-sm">
+        <a
+          href={googleForm.viewUrl}
+          class="text-brand-light hover:text-brand"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open form in a new tab
+        </a>
+      </p>
+    </details>
+  </div>
+</section>

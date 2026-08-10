@@ -1,0 +1,51 @@
+---
+import { schedule, site } from '../data/site';
+---
+
+<section id="schedule" class="section-pad bg-surface-elevated">
+  <div class="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1fr_2fr]">
+    <div class="lg:sticky lg:top-28 lg:self-start">
+      <h2 data-reveal="left" class="font-display text-4xl leading-tight text-white md:text-6xl">
+        Your journey through the event
+      </h2>
+      <p data-reveal="left" data-reveal-delay="100" class="mt-6 text-lg text-white/70">
+        Three days of workshops, practicas, and milongas — culminating in a gala show with Carlos & Mirella.
+      </p>
+      <a data-reveal="left" data-reveal-delay="200" href={site.registerUrl} class="btn-primary mt-8">
+        Get a ticket
+      </a>
+    </div>
+
+    <div class="space-y-12">
+      {schedule.map((day, dayIndex) => (
+        <div data-reveal data-reveal-delay={String(dayIndex * 100)}>
+          <h3 class="font-display mb-6 border-b border-brand/40 pb-3 text-2xl text-brand-light">
+            {day.day}
+          </h3>
+          <ol class="space-y-8">
+            {day.items.map((item, index) => (
+              <li
+                data-reveal
+                data-reveal-delay={String(dayIndex * 100 + index * 80)}
+                class="flex gap-5"
+              >
+                <div class="flex flex-col items-center">
+                  <span class="font-display text-xl text-white">{index + 1}</span>
+                  <div class="timeline-dot"></div>
+                  {index < day.items.length - 1 && (
+                    <div class="mt-2 w-px flex-1 bg-white/15"></div>
+                  )}
+                </div>
+                <div class="pb-2">
+                  <p class="text-sm font-semibold uppercase tracking-wider text-brand">{item.time}</p>
+                  <h4 class="mt-1 text-xl font-semibold text-white">{item.title}</h4>
+                  <p class="mt-2 text-white/65">{item.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

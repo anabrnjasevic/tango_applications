@@ -1,0 +1,34 @@
+---
+import { stats } from '../data/site';
+---
+
+<section class="relative overflow-hidden section-pad">
+  <img
+    src="/images/stats-bg.webp"
+    alt=""
+    class="absolute inset-0 h-full w-full object-cover opacity-30"
+    aria-hidden="true"
+  />
+  <div class="absolute inset-0 bg-black/75"></div>
+
+  <div class="relative mx-auto max-w-7xl">
+    <h2 data-reveal="fade" class="font-display mb-16 text-center text-4xl text-white md:text-6xl">
+      The numbers speak for themselves
+    </h2>
+
+    <div class="grid gap-8 md:grid-cols-3">
+      {stats.map((stat, index) => (
+        <div
+          data-reveal="scale"
+          data-reveal-delay={String(index * 150)}
+          class="rounded-2xl border border-white/10 bg-black/50 p-8 text-center backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand/30"
+        >
+          <p class="font-display text-6xl text-brand md:text-7xl">
+            <span data-count={stat.value}>0</span><span class="text-brand-light">{stat.suffix}</span>
+          </p>
+          <p class="mt-4 text-lg text-white/75">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

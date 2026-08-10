@@ -1,0 +1,343 @@
+---
+import {
+  dancingYearsOptions,
+  formEntries,
+  googleForm,
+  packageOptions,
+  roleOptions,
+  yesNoOptions,
+} from '../data/form';
+import { fieldLimits } from '../lib/form-security';
+
+const turnstileSiteKey =
+  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ??
+  (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
+---
+
+<form id="registration-form" class="space-y-8" novalidate>
+  <fieldset class="space-y-4">
+    <legend class="font-display text-2xl text-brand-light">Contact information</legend>
+
+    <label class="field">
+      <span class="field-label">Surname and name *</span>
+      <input type="text" name="name" required autocomplete="name" maxlength={fieldLimits.name} class="field-input" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Email *</span>
+      <input type="email" name="email" required autocomplete="email" maxlength={fieldLimits.email} class="field-input" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Phone number *</span>
+      <input type="tel" name="phone" required autocomplete="tel" maxlength={fieldLimits.phone} class="field-input" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Country and place *</span>
+      <input type="text" name="location" required autocomplete="address-level1" maxlength={fieldLimits.location} class="field-input" />
+    </label>
+  </fieldset>
+
+  <fieldset class="space-y-3">
+    <legend class="field-label mb-1 block">How long have you been dancing? *</legend>
+    {
+      dancingYearsOptions.map((option) => (
+        <label class="choice">
+          <input type="radio" name="dancingYears" value={option} required class="choice-input" />
+          <span>{option}</span>
+        </label>
+      ))
+    }
+  </fieldset>
+
+  <fieldset class="space-y-3">
+    <legend class="field-label mb-1 block">Have you performed as a tango dancer? *</legend>
+    {
+      yesNoOptions.map((option) => (
+        <label class="choice">
+          <input type="radio" name="performed" value={option} required class="choice-input" />
+          <span>{option}</span>
+        </label>
+      ))
+    }
+  </fieldset>
+
+  <fieldset class="space-y-3">
+    <legend class="field-label mb-1 block">Are you a tango instructor? *</legend>
+    {
+      yesNoOptions.map((option) => (
+        <label class="choice">
+          <input type="radio" name="instructor" value={option} required class="choice-input" />
+          <span>{option}</span>
+        </label>
+      ))
+    }
+  </fieldset>
+
+  <fieldset class="space-y-3">
+    <legend class="field-label mb-1 block">I apply as: *</legend>
+    {
+      roleOptions.map((option) => (
+        <label class="choice">
+          <input
+            type="radio"
+            name="role"
+            value={option.value}
+            required
+            class="choice-input"
+            data-needs-partner={option.needsPartner ? 'true' : undefined}
+          />
+          <span>{option.label}</span>
+        </label>
+      ))
+    }
+    <label id="partner-field" class="field hidden">
+      <span class="field-label">Partner's surname and name *</span>
+      <input type="text" name="partnerName" maxlength={fieldLimits.partnerName} class="field-input" />
+    </label>
+  </fieldset>
+
+  <fieldset class="space-y-3">
+    <legend class="field-label mb-1 block">Choose your type of package: *</legend>
+    {
+      packageOptions.map((option) => (
+        <label class="choice">
+          <input type="checkbox" name="packages" value={option} class="choice-input" />
+          <span>{option}</span>
+        </label>
+      ))
+    }
+  </fieldset>
+
+  <label class="field">
+    <span class="field-label">Anything you want to share?</span>
+    <textarea name="notes" rows="4" maxlength={fieldLimits.notes} class="field-input resize-y"></textarea>
+  </label>
+
+  <label class="field-honeypot" aria-hidden="true">
+    <span>Website</span>
+    <input type="text" name="website" tabindex="-1" autocomplete="off" />
+  </label>
+
+  {
+    turnstileSiteKey ? (
+      <div
+        id="turnstile-widget"
+        class="cf-turnstile"
+        data-sitekey={turnstileSiteKey}
+        data-theme="dark"
+      />
+    ) : (
+      <p class="text-sm text-red-300">Registration is temporarily unavailable. Missing Turnstile configuration.</p>
+    )
+  }
+
+  <p id="form-message" class="hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></p>
+
+  <button
+    type="submit"
+    class="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
+    disabled={!turnstileSiteKey}
+  >
+    Submit application
+  </button>
+</form>
+
+<iframe
+  id="google-form-target"
+  name="google-form-target"
+  title="Form submission target"
+  class="pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0"
+></iframe>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script
+  define:vars={{
+    submitUrl: googleForm.submitUrl,
+    successMessage: googleForm.successMessage,
+    entries: formEntries,
+    coupleOptionValue: roleOptions.find((option) => option.needsPartner)?.value ?? '',
+    turnstileEnabled: Boolean(turnstileSiteKey),
+  }}
+>
+  const form = document.getElementById('registration-form');
+  const message = document.getElementById('form-message');
+  const partnerField = document.getElementById('partner-field');
+  const partnerInput = form?.querySelector('input[name="partnerName"]');
+  const targetFrame = document.getElementById('google-form-target');
+
+  function setMessage(text, type) {
+    if (!message) return;
+    message.textContent = text;
+    message.classList.remove(
+      'hidden',
+      'border-brand/40',
+      'bg-brand/10',
+      'text-brand-light',
+      'border-red-400/40',
+      'bg-red-500/10',
+      'text-red-200',
+    );
+    if (type === 'success') {
+      message.classList.add('border-brand/40', 'bg-brand/10', 'text-brand-light');
+    } else {
+      message.classList.add('border-red-400/40', 'bg-red-500/10', 'text-red-200');
+    }
+  }
+
+  function updatePartnerField() {
+    const selected = form?.querySelector('input[name="role"]:checked');
+    const showPartner = selected?.value === coupleOptionValue;
+    partnerField?.classList.toggle('hidden', !showPartner);
+    if (partnerInput) {
+      partnerInput.required = Boolean(showPartner);
+      if (!showPartner) partnerInput.value = '';
+    }
+  }
+
+  form?.querySelectorAll('input[name="role"]').forEach((input) => {
+    input.addEventListener('change', updatePartnerField);
+  });
+
+  function addHiddenField(formEl, name, value) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    formEl.appendChild(input);
+  }
+
+  function buildNotes(partnerName, notes) {
+    const parts = [];
+    if (partnerName.trim()) parts.push(`Couple partner: ${partnerName.trim()}`);
+    if (notes.trim()) parts.push(notes.trim());
+    return parts.join('\n\n');
+  }
+
+  function submitToGoogleForm(payload, fbzx) {
+    return new Promise((resolve, reject) => {
+      const bridge = document.createElement('form');
+      bridge.method = 'POST';
+      bridge.action = submitUrl;
+      bridge.target = 'google-form-target';
+      bridge.style.display = 'none';
+
+      addHiddenField(bridge, entries.name, payload.name);
+      addHiddenField(bridge, entries.email, payload.email);
+      addHiddenField(bridge, entries.phone, payload.phone);
+      addHiddenField(bridge, entries.location, payload.location);
+      addHiddenField(bridge, entries.dancingYears, payload.dancingYears);
+      addHiddenField(bridge, entries.performed, payload.performed);
+      addHiddenField(bridge, entries.instructor, payload.instructor);
+      addHiddenField(bridge, entries.role, payload.role);
+      addHiddenField(bridge, 'emailAddress', payload.email);
+      addHiddenField(bridge, 'emailReceipt', 'true');
+      addHiddenField(bridge, 'fvv', '1');
+      addHiddenField(bridge, 'pageHistory', '0');
+      if (fbzx) addHiddenField(bridge, 'fbzx', fbzx);
+
+      for (const pkg of payload.packages) {
+        addHiddenField(bridge, entries.packages, pkg);
+      }
+
+      const notes = buildNotes(payload.partnerName, payload.notes);
+      if (notes) addHiddenField(bridge, entries.notes, notes);
+
+      let settled = false;
+      const finish = (ok) => {
+        if (settled) return;
+        settled = true;
+        bridge.remove();
+        ok ? resolve(true) : reject(new Error('Submission failed'));
+      };
+
+      targetFrame?.addEventListener('load', () => finish(true), { once: true });
+      setTimeout(() => finish(true), 4000);
+
+      document.body.appendChild(bridge);
+      bridge.submit();
+    });
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form || !turnstileEnabled) return;
+
+    const packages = Array.from(form.querySelectorAll('input[name="packages"]:checked')).map(
+      (input) => input.value,
+    );
+
+    if (!packages.length) {
+      setMessage('Please choose at least one package.', 'error');
+      return;
+    }
+
+    const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value ?? '';
+
+    if (!turnstileToken) {
+      setMessage('Please complete the security check.', 'error');
+      return;
+    }
+
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get('name') ?? ''),
+      email: String(formData.get('email') ?? ''),
+      phone: String(formData.get('phone') ?? ''),
+      location: String(formData.get('location') ?? ''),
+      dancingYears: String(formData.get('dancingYears') ?? ''),
+      performed: String(formData.get('performed') ?? ''),
+      instructor: String(formData.get('instructor') ?? ''),
+      role: String(formData.get('role') ?? ''),
+      partnerName: String(formData.get('partnerName') ?? ''),
+      packages,
+      notes: String(formData.get('notes') ?? ''),
+      website: String(formData.get('website') ?? ''),
+      turnstileToken,
+    };
+
+    if (payload.role === coupleOptionValue && !payload.partnerName.trim()) {
+      setMessage('Please enter your partner\'s name.', 'error');
+      return;
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
+    setMessage('Sending…', 'success');
+
+    try {
+      const registerResponse = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const registerResult = await registerResponse.json();
+
+      if (!registerResponse.ok || !registerResult.ok) {
+        setMessage(registerResult.error ?? 'Something went wrong. Please try again.', 'error');
+        window.turnstile?.reset?.();
+        return;
+      }
+
+      if (registerResult.submit && registerResult.submission) {
+        await submitToGoogleForm(registerResult.submission, registerResult.fbzx ?? null);
+      }
+
+      form.reset();
+      updatePartnerField();
+      window.turnstile?.reset?.();
+      setMessage(successMessage, 'success');
+    } catch {
+      setMessage(
+        'Could not submit the form. Try the embedded Google Form below, or refresh and try again.',
+        'error',
+      );
+      window.turnstile?.reset?.();
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
+  });
+</script>

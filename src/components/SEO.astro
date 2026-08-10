@@ -1,0 +1,44 @@
+---
+import { seo, site, siteUrl } from '../data/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  canonicalPath?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = seo.description,
+  image = seo.ogImage,
+  canonicalPath = '/',
+  noindex = false,
+} = Astro.props;
+
+const canonicalUrl = new URL(canonicalPath, siteUrl).href;
+const imageUrl = new URL(image, siteUrl).href;
+const robots = noindex ? 'noindex, nofollow' : 'index, follow';
+---
+
+<meta name="description" content={description} />
+<meta name="robots" content={robots} />
+<meta name="theme-color" content={seo.themeColor} />
+
+<link rel="canonical" href={canonicalUrl} />
+<link rel="alternate" type="text/plain" href="/info.txt" title="Plain text event information" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.title} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:locale" content={seo.locale} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+{seo.twitterHandle && <meta name="twitter:site" content={seo.twitterHandle} />}

@@ -1,0 +1,23 @@
+---
+import { site, navLinks } from '../data/site';
+---
+
+<header data-nav class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-md">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-10">
+    <a href="#" class="font-display text-xl tracking-widest text-white md:text-2xl">
+      CAMINO<span class="text-brand">TANGO</span>
+    </a>
+
+    <nav class="hidden items-center gap-8 lg:flex" aria-label="Main">
+      {navLinks.map((link) => (
+        <a href={link.href} class="text-sm uppercase tracking-wider text-white/70 transition-colors duration-300 hover:text-brand">
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <a href={site.registerUrl} class="btn-primary text-xs md:text-sm">
+      Register
+    </a>
+  </div>
+</header>

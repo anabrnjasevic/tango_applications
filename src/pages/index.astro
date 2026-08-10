@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EventSchema from '../components/EventSchema.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Artists from '../components/Artists.astro';
+import DJs from '../components/DJs.astro';
+import Stats from '../components/Stats.astro';
+import Schedule from '../components/Schedule.astro';
+import Glance from '../components/Glance.astro';
+import Venue from '../components/Venue.astro';
+import Pricing from '../components/Pricing.astro';
+import Register from '../components/Register.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { seo, site } from '../data/site';
+
+const pageTitle = `${site.title} | ${site.tagline}`;
+---
+
+<BaseLayout title={pageTitle} description={seo.description}>
+  <EventSchema />
+  <Nav />
+  <main>
+    <Hero />
+    <Artists />
+    <DJs />
+    <Stats />
+    <Schedule />
+    <Glance />
+    <Venue />
+    <Pricing />
+    <Register />
+    <Testimonials />
+    <Contact />
+  </main>
+  <Footer />
+</BaseLayout>

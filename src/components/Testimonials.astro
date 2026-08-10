@@ -1,0 +1,21 @@
+---
+import { testimonials } from '../data/site';
+---
+
+<section class="section-pad bg-surface-elevated">
+  <div class="mx-auto max-w-7xl">
+    <h2 data-reveal="fade" class="font-display mb-12 text-center text-4xl text-white md:text-6xl">What dancers say</h2>
+
+    <div class="grid gap-6 md:grid-cols-3">
+      {testimonials.map((item, index) => (
+        <blockquote data-reveal="scale" data-reveal-delay={String(index * 120)} class="card-dark flex flex-col">
+          <p class="flex-1 text-white/75">&ldquo;{item.quote}&rdquo;</p>
+          <footer class="mt-6 border-t border-white/10 pt-6">
+            <p class="font-semibold text-white">{item.name}</p>
+            <p class="text-sm text-brand-light">{item.role}</p>
+          </footer>
+        </blockquote>
+      ))}
+    </div>
+  </div>
+</section>

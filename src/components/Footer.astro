@@ -1,0 +1,16 @@
+---
+import { site } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-white/10 bg-black px-5 py-10 md:px-10">
+  <div data-reveal="fade" class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 md:flex-row">
+    <p class="font-display text-xl tracking-widest text-white">
+      CAMINO<span class="text-brand">TANGO</span>
+    </p>
+    <p class="text-sm text-white/50">
+      © {year} {site.title}. Built with Astro · deploy on Vercel.
+    </p>
+  </div>
+</footer>
