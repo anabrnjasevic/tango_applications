@@ -11,27 +11,139 @@ import { copy, djs } from '../data/site';
       </p>
     </div>
 
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      {djs.map((dj, index) => (
-        <article
-          data-reveal="scale"
-          data-reveal-delay={String(index * 120)}
-          class="group overflow-hidden rounded-2xl border border-white/10 bg-surface-card transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/30"
-        >
-          <div class="overflow-hidden">
-            <img
-              src={dj.image}
-              alt={dj.name}
-              class="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
-            />
-          </div>
-          <div class="p-6">
-            <h3 class="font-display text-2xl text-white">{dj.name}</h3>
-            <p class="mt-1 text-brand-light">{dj.role}</p>
-            <p class="mt-3 text-sm text-white/65">{dj.bio}</p>
-          </div>
-        </article>
-      ))}
+    <div class="grid gap-8 lg:grid-cols-3">
+      {djs.map((dj, index) => {
+        const hasHighlights = 'highlights' in dj && dj.highlights.length > 0;
+
+        return (
+          <article
+            data-reveal="scale"
+            data-reveal-delay={String(index * 120)}
+            class="group relative overflow-hidden rounded-2xl border border-white/10 bg-surface-card transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/30 data-[bio-open]:translate-y-0 data-[bio-open]:shadow-lg data-[bio-open]:shadow-black/30"
+            data-dj-card
+          >
+            <button
+              type="button"
+              class="absolute top-4 right-4 z-30 rounded-full border border-white/20 bg-black/75 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm transition hover:border-white/40 hover:bg-black/90"
+              data-dj-bio-open
+            >
+              Full bio
+            </button>
+
+            <button
+              type="button"
+              class="absolute top-4 right-4 z-30 rounded-full border border-white/20 bg-black/75 p-2 text-white/70 backdrop-blur-sm transition hover:border-white/40 hover:bg-black/90 hover:text-white"
+              data-dj-bio-close
+              aria-label="Close bio"
+              hidden
+            >
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+              </svg>
+            </button>
+
+            <div class="overflow-hidden">
+              <img
+                src={dj.image}
+                alt={dj.name}
+                class="aspect-[4/5] w-full object-cover object-top transition duration-500 group-hover:scale-105 group-data-[bio-open]:scale-100"
+              />
+            </div>
+            <div class="p-6">
+              <h3 class="font-display text-2xl text-white">{dj.name}</h3>
+              <p class="mt-1 text-brand-light">{dj.role}</p>
+            </div>
+
+            <div
+              data-dj-full
+              class="absolute inset-0 z-20 flex -translate-y-full flex-col bg-surface-card transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              inert
+              aria-hidden="true"
+            >
+              <div class="dj-bio-scroll flex-1 overflow-y-auto p-6 pt-14">
+                <h3 class="font-display text-2xl text-white">{dj.name}</h3>
+                <p class="mt-1 text-brand-light">{dj.role}</p>
+                <div class="mt-4">
+                  <p class="text-sm leading-relaxed text-white/70">{dj.bio}</p>
+                  {hasHighlights && (
+                    <ul class="mt-4 space-y-2 border-t border-white/10 pt-4 text-sm text-white/60">
+                      {dj.highlights.map((highlight) => (
+                        <li class="flex gap-2">
+                          <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-brand"></span>
+                          <span>{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          </article>
+        );
+      })}
     </div>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll('[data-dj-card]').forEach((card) => {
+    const full = card.querySelector('[data-dj-full]');
+    const openButton = card.querySelector('[data-dj-bio-open]');
+    const closeButton = card.querySelector('[data-dj-bio-close]');
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let open = false;
+
+    const setOpen = (next) => {
+      open = next;
+
+      if (open) {
+        openButton.hidden = true;
+        closeButton.hidden = false;
+        card.dataset.bioOpen = '';
+        card.classList.add('ring-1', 'ring-brand/30');
+
+        full.removeAttribute('inert');
+        full.setAttribute('aria-hidden', 'false');
+        full.classList.add('-translate-y-full');
+
+        if (motionQuery.matches) {
+          full.classList.remove('-translate-y-full');
+          return;
+        }
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            full.classList.remove('-translate-y-full');
+          });
+        });
+        return;
+      }
+
+      delete card.dataset.bioOpen;
+      card.classList.remove('ring-1', 'ring-brand/30');
+      closeButton.hidden = true;
+
+      full.setAttribute('aria-hidden', 'true');
+      full.setAttribute('inert', '');
+
+      if (motionQuery.matches) {
+        full.classList.add('-translate-y-full');
+        openButton.hidden = false;
+        return;
+      }
+
+      full.classList.add('-translate-y-full');
+      full.addEventListener(
+        'transitionend',
+        () => {
+          openButton.hidden = false;
+        },
+        { once: true },
+      );
+    };
+
+    openButton?.addEventListener('click', () => setOpen(true));
+    closeButton?.addEventListener('click', () => setOpen(false));
+  });
+</script>

@@ -211,3 +211,25 @@ body {
 .field-honeypot {
   @apply pointer-events-none absolute -left-[9999px] h-px w-px overflow-hidden opacity-0;
 }
+
+.dj-bio-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(0 172 193 / 0.45) transparent;
+}
+
+.dj-bio-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dj-bio-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dj-bio-scroll::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: rgb(0 172 193 / 0.45);
+}
+
+.dj-bio-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgb(38 198 218 / 0.65);
+}

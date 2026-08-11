@@ -1,0 +1,60 @@
+---
+import { maestrosIntro } from '../data/site';
+
+const { videoUrl } = maestrosIntro;
+---
+
+<section class="section-pad bg-surface">
+  <div class="mx-auto max-w-4xl text-center">
+    <p data-reveal class="font-display text-5xl text-brand-light md:text-7xl">
+      {maestrosIntro.names}
+    </p>
+
+    <p data-reveal data-reveal-delay="100" class="mt-4 text-xl text-white/80 md:text-2xl">
+      {maestrosIntro.tagline}
+    </p>
+
+    <p data-reveal data-reveal-delay="200" class="mt-8 text-lg leading-relaxed text-white/75 md:text-xl">
+      {maestrosIntro.intro}
+    </p>
+
+    <p
+      data-reveal
+      data-reveal-delay="300"
+      class="mt-10 text-lg font-semibold uppercase tracking-wider text-brand md:text-xl">
+      {maestrosIntro.callout}
+    </p>
+
+    <div data-reveal data-reveal-delay="400" class="mt-10 space-y-6 text-left text-lg leading-relaxed text-white/75 md:text-xl">
+      {maestrosIntro.paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+
+    <div data-reveal data-reveal-delay="500" class="mt-14">
+      {videoUrl ? (
+        <div class="overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/40">
+          <div class="aspect-video">
+            <iframe
+              src={videoUrl}
+              title={`${maestrosIntro.names} — promo video`}
+              class="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            />
+          </div>
+        </div>
+      ) : (
+        <div class="flex aspect-video flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-surface-elevated">
+          <div class="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="ml-1 h-7 w-7 text-brand">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+          <p class="mt-4 font-display text-2xl tracking-wide text-white/90">Video coming soon</p>
+          <p class="mt-2 text-sm text-white/50">Promo video will appear here</p>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

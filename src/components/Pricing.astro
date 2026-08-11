@@ -1,5 +1,7 @@
 ---
 import { copy, pricing, site } from '../data/site';
+
+const defaultPeriod = pricing.periods[0]?.id ?? 'super-early';
 ---
 
 <section id="tickets" class="section-pad bg-surface">
@@ -9,48 +11,118 @@ import { copy, pricing, site } from '../data/site';
       <p data-reveal="fade" data-reveal-delay="100" class="mt-4 text-xl text-brand-light">{pricing.subheadline}</p>
     </div>
 
-    <div class="grid gap-6 sm:grid-cols-2">
-      {pricing.tiers.map((tier, index) => (
-        <article
-          data-reveal="scale"
-          data-reveal-delay={String(index * 150)}
-          class:list={[tier.featured ? 'card-brand' : 'card-dark', 'flex flex-col']}
-        >
-          <div class="flex items-start justify-between gap-4">
-            <h3 class:list={['font-display text-2xl', tier.featured ? 'text-black' : 'text-white']}>
-              {tier.name}
-            </h3>
-            <p class:list={['font-display text-5xl', tier.featured ? 'text-black' : 'text-brand']}>
-              {tier.price}
-            </p>
-          </div>
-
-          <ul class="mt-8 flex-1 space-y-3">
-            {tier.features.map((feature) => (
-              <li class:list={['flex items-center gap-3 text-sm', tier.featured ? 'text-black/80' : 'text-white/75']}>
-                <span class:list={['h-1.5 w-1.5 rounded-full', tier.featured ? 'bg-black' : 'bg-brand']}></span>
-                {feature}
-              </li>
-            ))}
-          </ul>
-
-          <a
-            href={site.registerUrl}
+    <div data-reveal="fade" data-reveal-delay="150" class="mb-10 flex flex-wrap justify-center gap-2">
+      {
+        pricing.periods.map((period) => (
+          <button
+            type="button"
+            data-pricing-tab={period.id}
             class:list={[
-              'mt-8 inline-flex justify-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95',
-              tier.featured
-                ? 'bg-black text-white hover:bg-black/80'
-                : 'bg-brand text-black hover:bg-brand-light',
+              'rounded-full border px-5 py-2 text-sm font-semibold uppercase tracking-wider transition-all duration-300',
+              period.id === defaultPeriod
+                ? 'border-brand bg-brand text-black'
+                : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white',
             ]}
           >
-            {copy.heroCtaRegister}
-          </a>
-        </article>
-      ))}
+            {period.name}
+          </button>
+        ))
+      }
     </div>
 
-    <p data-reveal="fade" class="font-display mt-12 text-center text-2xl text-white md:text-3xl">
-      {pricing.deadline}
-    </p>
+    {
+      pricing.periods.map((period) => (
+        <div
+          data-pricing-panel={period.id}
+          class:list={['space-y-8', period.id === defaultPeriod ? '' : 'hidden']}
+        >
+          <div class="grid gap-6 sm:grid-cols-2">
+            {period.packages.map((tier, index) => (
+              <article
+                data-reveal="scale"
+                data-reveal-delay={String(index * 100)}
+                class:list={[tier.featured ? 'card-brand' : 'card-dark', 'flex flex-col']}
+              >
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 class:list={['font-display text-2xl', tier.featured ? 'text-black' : 'text-white']}>
+                      {tier.name}
+                    </h3>
+                    <p class:list={['mt-1 text-sm', tier.featured ? 'text-black/70' : 'text-white/60']}>
+                      {tier.description}
+                    </p>
+                  </div>
+                  <p class:list={['font-display text-5xl', tier.featured ? 'text-black' : 'text-brand']}>
+                    {tier.price}
+                  </p>
+                </div>
+
+                <a
+                  href={site.registerUrl}
+                  class:list={[
+                    'mt-8 inline-flex justify-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95',
+                    tier.featured
+                      ? 'bg-black text-white hover:bg-black/80'
+                      : 'bg-brand text-black hover:bg-brand-light',
+                  ]}
+                >
+                  {copy.heroCtaRegister}
+                </a>
+              </article>
+            ))}
+          </div>
+
+          {
+            period.individuals.length > 0 && (
+              <div class="rounded-2xl border border-white/10 bg-surface-card p-6 md:p-8">
+                <h3 class="font-display text-2xl text-white">Individual tickets</h3>
+                <ul class="mt-4 grid gap-3 sm:grid-cols-3">
+                  {period.individuals.map((item) => (
+                    <li class="flex items-center justify-between rounded-xl border border-white/10 px-4 py-3 text-white/80">
+                      <span>{item.name}</span>
+                      <span class="font-display text-xl text-brand">{item.price}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </div>
+      ))
+    }
+
+    <ul data-reveal="fade" class="mt-12 space-y-3 text-sm text-white/60 md:text-base">
+      {pricing.notes.map((note) => (
+        <li class="flex gap-3">
+          <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand"></span>
+          <span>{note}</span>
+        </li>
+      ))}
+    </ul>
   </div>
 </section>
+
+<script>
+  const tabs = document.querySelectorAll('[data-pricing-tab]');
+  const panels = document.querySelectorAll('[data-pricing-panel]');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const id = tab.getAttribute('data-pricing-tab');
+      if (!id) return;
+
+      tabs.forEach((button) => {
+        const active = button.getAttribute('data-pricing-tab') === id;
+        button.classList.toggle('border-brand', active);
+        button.classList.toggle('bg-brand', active);
+        button.classList.toggle('text-black', active);
+        button.classList.toggle('border-white/20', !active);
+        button.classList.toggle('text-white/70', !active);
+      });
+
+      panels.forEach((panel) => {
+        panel.classList.toggle('hidden', panel.getAttribute('data-pricing-panel') !== id);
+      });
+    });
+  });
+</script>

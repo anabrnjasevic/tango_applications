@@ -96,27 +96,41 @@ Renowned for their elegance, musicality, and captivating performances, they have
 
 As teachers, they combine technical excellence with a warm, engaging approach, inspiring dancers around the world through performances, workshops, and a deep commitment to the art of Argentine tango.`,
   gala: 'Artist Show: Gala Milonga Sunday Nov. 22nd',
-  videoUrl: 'https://www.youtube.com/embed/MzWXSPkNs48?start=9',
+  videoUrl: '/videos/carlos-mirella.mp4',
+  image: '/images/artist-feature.png',
 } as const;
 
 export const djs = [
   {
-    name: 'DJ Carlos',
-    role: 'The Golden Age',
-    image: '/images/dj-1.png',
-    bio: 'DJ Carlos reads the energy of the room instantly, using sophisticated orchestration to keep couples deeply connected and inspired.',
+    name: 'DJ Carlos Santos David',
+    role: 'Sound. Emotion. Connection.',
+    image: '/images/dj-carlos.png',
+    bio: 'I am a DJ for the dancer, by a dancer. My sets are built on the pillars of the greatest orchestras—the sharp cuts of Biagi, the romanticism of Caló, the rhythmic punch of Tanturi, and the majestic, flowing sound of Carlos Di Sarli.',
+    highlights: [
+      'Traditional Roots: Specializing in the iconic, crowd-favorite sound of the Golden Age.',
+      'Dynamic & Eclectic: I skillfully read the room to match the energy, mood, and needs of the dancers.',
+      'Signature Tandas: Expect masterful sets featuring the elegance of Instrumental Di Sarli, the swing of Tanturi-Campos, the drama of Caló-Iriarte, and the fire of Biagi-Duval.',
+      'The Experience: I don\'t just play music; I create an atmosphere that inspires movement, connection, and that "magic moment" on the floor.',
+    ],
   },
   {
     name: 'DJ Marco Kang',
-    role: 'Master of pacing',
-    image: '/images/dj-2.png',
-    bio: 'A master of pacing, he builds a seamless, hypnotic wave across tandas, ensuring dancers never want to leave the floor.',
+    role: 'Traditional with a modern touch',
+    image: '/images/dj-marco-kang.png',
+    bio: 'Raised and lived for 30+ years in Buenos Aires, learned about tango straight from its source. My style as a DJ is traditional, sometimes with a little touch of modern, looking for every feeling tango has and can give to you — looking for everyone to have a great time!',
+    highlights: [] as string[],
   },
   {
     name: 'DJ Shone',
-    role: 'Pure groove and precision',
-    image: '/images/dj-3.png',
-    bio: 'Pure groove and precision, he locks into a tight, vibrant pulse that gives dancers total confidence in every step.',
+    role: 'Golden age energy from Niš',
+    image: '/images/dj-shone.png',
+    bio: 'My strong passion for tango and my interest in its therapeutic power led me to DJ-ing. Tango creates emotions from the first moment you play, listen and dance. That is what I would like to present with my DJ set.',
+    highlights: [
+      'Coming from Niš, we welcome TDJ Shone — a DJ with decades of experience whose reputation echoes across the Balkans and beyond.',
+      'Highly respected from Bulgaria to Bosnia and throughout Europe, Shone is a master at reading the floor\'s energy with precision.',
+      'His sets are energetic and well balanced, with a firm base in the golden age of tango — always in a fine compilation of tandas and cortinas.',
+      'Get your dancing shoes ready for tandas that simply won\'t let you sit down!',
+    ],
   },
 ] as const;
 
@@ -125,10 +139,10 @@ export const schedule = [
     title: 'Welcome milonga',
     time: '20:00–00:00',
     day: 'Friday, Nov 20th',
-    tag: 'DJ Carlos',
+    tag: 'DJ Carlos Santos David',
     details: [
       'Immerse yourself in the sounds of The Golden Age!',
-      'DJ Carlos reads the energy of the room instantly, using sophisticated orchestration to keep couples deeply connected and inspired.',
+      'A DJ for the dancer, by a dancer — built on the pillars of Biagi, Caló, Tanturi, and Di Sarli.',
     ],
   },
   {
@@ -166,7 +180,7 @@ export const schedule = [
     day: 'Saturday, Nov 21st',
     tag: 'DJ Marco Kang',
     details: [
-      'A master of pacing, he builds a seamless, hypnotic wave across tandas, ensuring dancers never want to leave the floor.',
+      'Traditional tango straight from Buenos Aires — with a touch of modern when the room calls for it.',
     ],
   },
   {
@@ -203,7 +217,7 @@ export const schedule = [
     day: 'Sunday, Nov 22nd',
     tag: 'DJ Shone',
     details: [
-      'Pure groove and precision, he locks into a tight, vibrant pulse that gives dancers total confidence in every step.',
+      'Energetic, well-balanced golden age tandas — tandas that simply won\'t let you sit down!',
     ],
   },
 ] as const;
@@ -221,33 +235,105 @@ export const venue = {
 } as const;
 
 export const pricing = {
-  headline: 'Select Your Experience',
+  headline: 'Prices & Registration',
   subheadline: "Don't miss the early bird prices!",
-  deadline: 'Super Early Bird ends on 01/Aug/26 · Early Bird ends on 16/Aug/26',
-  tiers: [
+  notes: [
+    'For super early bird and early bird offers, you can only buy the proposed packages — not individual workshops, masterclasses, or milongas.',
+    'During regular registration and on the day of the event, you can buy packages or individual workshops, masterclasses, or milongas.',
+    'Masterclasses are not part of the Full Pass. Priority is given to dance instructors, performers, and experienced dancers. Due to limited capacity, the organizers reserve the right to accept or reject masterclass applications. You will be notified via email.',
+  ],
+  periods: [
     {
-      name: 'Full Pass',
-      price: '€90',
-      featured: true,
-      features: ['All workshops', 'All milongas', 'Gala show entry'],
+      id: 'super-early',
+      name: 'Super Early Bird',
+      packages: [
+        { name: 'Milonga Pass', description: '3 milongas', price: '€50', featured: false },
+        { name: 'Workshop Pass', description: '4 workshops', price: '€70', featured: false },
+        {
+          name: 'Masterclass Pass',
+          description: '2 masterclasses (not part of Full Pass)',
+          price: '€40',
+          featured: false,
+        },
+        {
+          name: 'Full Pass',
+          description: '4 workshops & 3 milongas',
+          price: '€110',
+          featured: true,
+        },
+      ],
+      individuals: [] as { name: string; price: string }[],
     },
     {
-      name: 'Milonga Pass',
-      price: '€70',
-      featured: false,
-      features: ['All milongas', 'Gala show entry'],
+      id: 'early',
+      name: 'Early Bird',
+      packages: [
+        { name: 'Milonga Pass', description: '3 milongas', price: '€60', featured: false },
+        { name: 'Workshop Pass', description: '4 workshops', price: '€80', featured: false },
+        {
+          name: 'Masterclass Pass',
+          description: '2 masterclasses (not part of Full Pass)',
+          price: '€50',
+          featured: false,
+        },
+        {
+          name: 'Full Pass',
+          description: '4 workshops & 3 milongas',
+          price: '€130',
+          featured: true,
+        },
+      ],
+      individuals: [] as { name: string; price: string }[],
     },
     {
-      name: 'Workshop Pass',
-      price: '€55',
-      featured: false,
-      features: ['Saturday or Sunday workshops'],
+      id: 'regular',
+      name: 'Regular',
+      packages: [
+        { name: 'Milonga Pass', description: '3 milongas', price: '€70', featured: false },
+        { name: 'Workshop Pass', description: '4 workshops', price: '€90', featured: false },
+        {
+          name: 'Masterclass Pass',
+          description: '2 masterclasses (not part of Full Pass)',
+          price: '€55',
+          featured: false,
+        },
+        {
+          name: 'Full Pass',
+          description: '4 workshops & 3 milongas',
+          price: '€150',
+          featured: true,
+        },
+      ],
+      individuals: [
+        { name: 'Individual Milonga', price: '€25' },
+        { name: 'Individual Workshop', price: '€25' },
+        { name: 'Individual Masterclass', price: '€30' },
+      ],
     },
     {
-      name: 'Premium Pass',
-      price: '€150',
-      featured: true,
-      features: ['All-inclusive package', 'All workshops', 'All milongas', 'Gala show entry'],
+      id: 'day-of',
+      name: 'Day of Event',
+      packages: [
+        { name: 'Milonga Pass', description: '3 milongas', price: '€80', featured: false },
+        { name: 'Workshop Pass', description: '4 workshops', price: '€110', featured: false },
+        {
+          name: 'Masterclass Pass',
+          description: '2 masterclasses (not part of Full Pass)',
+          price: '€65',
+          featured: false,
+        },
+        {
+          name: 'Full Pass',
+          description: '4 workshops & 3 milongas',
+          price: '€180',
+          featured: true,
+        },
+      ],
+      individuals: [
+        { name: 'Individual Milonga', price: '€30' },
+        { name: 'Individual Workshop', price: '€30' },
+        { name: 'Individual Masterclass', price: '€35' },
+      ],
     },
   ],
 } as const;

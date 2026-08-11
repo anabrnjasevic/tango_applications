@@ -4,6 +4,8 @@ import { artists, event, pricing, seo, site, siteUrl } from '../data/site';
 const imageUrl = new URL(seo.ogImage, siteUrl).href;
 const eventUrl = new URL('/', siteUrl).href;
 
+const regularPricing = pricing.periods.find((period) => period.id === 'regular') ?? pricing.periods[0];
+
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'Event',
@@ -34,7 +36,7 @@ const schema = {
     '@type': 'Person',
     name,
   })),
-  offers: pricing.tiers.map((tier) => ({
+  offers: regularPricing.packages.map((tier) => ({
     '@type': 'Offer',
     name: tier.name,
     price: tier.price.replace('€', ''),

@@ -10,7 +10,7 @@ const { videoUrl } = artists;
       {artists.headline}
     </h2>
 
-    <div class="grid gap-8 md:grid-cols-2 lg:gap-12">
+    <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-12">
       <div data-reveal="left" class="space-y-6 text-lg leading-relaxed text-white/75 md:text-xl">
         <p class="font-display text-3xl text-brand-light md:text-4xl">{artists.names}</p>
 
@@ -28,42 +28,52 @@ const { videoUrl } = artists;
           {artists.calloutEmphasis}
           <span class="normal-case tracking-normal">{artists.calloutRest}</span>
         </p>
-      </div>
 
-      <div data-reveal="right" class="space-y-6 text-lg leading-relaxed text-white/75 md:text-xl">
         {artists.paragraphs.map((paragraph) => (
           <p>{paragraph}</p>
         ))}
       </div>
-    </div>
 
-    <div data-reveal class="mx-auto mt-14 max-w-4xl lg:max-w-5xl">
-      {videoUrl ? (
-        <div class="overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/40">
-          <div class="aspect-video">
-            <iframe
-              src={videoUrl}
-              title="Carlos and Mirella — promo video"
-              class="h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
+      <div data-reveal="right">
+        {videoUrl ? (
+          <div class="overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/40">
+            <div class="mx-auto aspect-[9/16] max-h-[80vh] w-full max-w-sm lg:max-w-none">
+              {videoUrl.startsWith('/') ? (
+                <video
+                  src={videoUrl}
+                  controls
+                  playsinline
+                  preload="metadata"
+                  class="h-full w-full bg-black object-contain"
+                >
+                  <track kind="captions" />
+                </video>
+              ) : (
+                <iframe
+                  src={videoUrl}
+                  title="Carlos and Mirella — promo video"
+                  class="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div class="group relative overflow-hidden rounded-2xl border border-white/10">
+            <img
+              src={artists.image}
+              alt="Carlos and Mirella performing on stage"
+              class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-105"
             />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6">
+              <p class="font-display text-2xl text-white">Carlos & Mirella Santos David</p>
+              <p class="text-white/70">Featured artists · Gala performance Sunday</p>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div class="group relative overflow-hidden rounded-2xl border border-white/10">
-          <img
-            src="/images/artist-feature.png"
-            alt="Carlos and Mirella performing on stage"
-            class="aspect-video w-full object-cover transition duration-700 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-          <div class="absolute bottom-0 left-0 right-0 p-6">
-            <p class="font-display text-2xl text-white">Carlos & Mirella Santos David</p>
-            <p class="text-white/70">Featured artists · Gala performance Sunday</p>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
 
     <div

@@ -21,10 +21,16 @@ function formatSchedule() {
 }
 
 function formatPricing() {
-  return pricing.tiers
-    .map((tier) => {
-      const features = tier.features.map((feature) => `  - ${feature}`).join('\n');
-      return `- **${tier.name}** (${tier.price})\n${features}`;
+  return pricing.periods
+    .map((period) => {
+      const packages = period.packages
+        .map((tier) => `- **${tier.name}** (${tier.price}) — ${tier.description}`)
+        .join('\n');
+      const individuals =
+        period.individuals.length > 0
+          ? `\nIndividual tickets:\n${period.individuals.map((item) => `- ${item.name}: ${item.price}`).join('\n')}`
+          : '';
+      return `### ${period.name}\n${packages}${individuals}`;
     })
     .join('\n\n');
 }
@@ -63,7 +69,7 @@ Gala: ${artists.gala}
 ${formatSchedule()}
 
 ## Pricing
-${pricing.headline} — ${pricing.deadline}
+${pricing.headline} — ${pricing.subheadline}
 
 ${formatPricing()}
 
@@ -122,14 +128,21 @@ PRICING
 =======
 ${pricing.headline}
 ${pricing.subheadline}
-${pricing.deadline}
 
-${pricing.tiers
-  .map((tier) => {
-    const features = tier.features.map((feature) => `  - ${feature}`).join('\n');
-    return `${tier.name} — ${tier.price}\n${features}`;
+${pricing.periods
+  .map((period) => {
+    const packages = period.packages
+      .map((tier) => `${tier.name} — ${tier.price} (${tier.description})`)
+      .join('\n');
+    const individuals =
+      period.individuals.length > 0
+        ? `\nIndividual:\n${period.individuals.map((item) => `${item.name} — ${item.price}`).join('\n')}`
+        : '';
+    return `${period.name}\n${packages}${individuals}`;
   })
   .join('\n\n')}
+
+${pricing.notes.map((note) => `- ${note}`).join('\n')}
 
 TESTIMONIALS
 ============

@@ -47,10 +47,10 @@ export const roleOptions = [
 ] as const;
 
 export const packageOptions = [
-  'Full Pass: 3 Milongas + 4 Workshops',
+  'Full Pass: 4 Workshops & 3 Milongas',
   'Milonga Pass: 3 Milongas',
   'Workshop Pass: 4 Workshops',
-  'Masterclass: Escenario 1 & 2 (Masterclass registration is subject to approval.)',
+  'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
 ] as const;
 
 export type RegistrationPayload = {
