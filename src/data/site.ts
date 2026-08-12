@@ -61,6 +61,8 @@ export const copy = {
   registrationClosedOnline:
     'Online registration has closed. Door registration is available at the event.',
   periodClosed: 'Closed',
+  periodNotYetOpen: 'Not yet open',
+  periodAtDoor: 'At the door',
   viewPrices: 'View prices',
   contactHeadline: 'Get in touch',
   contactIntro: "We'd love to hear from you!",
@@ -374,6 +376,7 @@ export const pricing = {
     {
       id: 'day-of',
       name: 'Day of Event',
+      dates: '16/11 - 22/11',
       startDate: '2026-11-16',
       endDate: '2026-11-22',
       footnoteNoteId: 'pricing-note-door',

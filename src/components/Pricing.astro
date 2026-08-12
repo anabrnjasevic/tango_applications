@@ -39,23 +39,30 @@ const defaultPeriod = getDefaultPricingTab();
                 data-pricing-tab={period.id}
                 data-period-status={periodState?.status ?? 'upcoming'}
                 class:list={[
-                  'relative rounded-full border px-5 py-2.5 text-sm font-semibold uppercase tracking-wider transition-all duration-300',
+                  'relative overflow-visible rounded-full border px-5 py-2.5 text-sm font-semibold uppercase tracking-wider transition-all duration-300',
                   isDefault && isActive
                     ? 'border-brand bg-brand text-black'
                     : isDefault && !isActive
                       ? 'border-brand/60 bg-brand/20 text-white'
                       : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white',
-                  isClosed && 'pricing-tab--closed opacity-65',
+                  isClosed && 'pricing-tab--closed',
                   isUpcoming && !isClosed && 'opacity-80',
                 ]}
               >
-                {period.name}
+                <span class="relative z-0">{period.name}</span>
+                {
+                  isClosed && (
+                    <img
+                      src="/images/pricing-tab-strike.png"
+                      alt=""
+                      aria-hidden="true"
+                      class="pricing-tab-strike pointer-events-none"
+                    />
+                  )
+                }
               </button>
               {dateLabel && (
                 <span class="text-xs text-white/60">{dateLabel}</span>
-              )}
-              {periodState?.opensLabel && (
-                <span class="text-xs text-white/50">{periodState.opensLabel}</span>
               )}
               {'footnoteNoteId' in period && period.footnoteNoteId && (
                 <span
@@ -120,8 +127,7 @@ const defaultPeriod = getDefaultPricingTab();
                     ) : (
                       <span
                         class:list={[
-                          'pricing-register--disabled mt-8 inline-flex cursor-not-allowed justify-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider opacity-60',
-                          periodState?.showStrikethrough && 'pricing-register--closed',
+                          'mt-8 inline-flex cursor-not-allowed justify-center rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wider opacity-60',
                           tier.featured
                             ? 'bg-black/50 text-white/70'
                             : 'border border-white/20 text-white/50',
@@ -130,7 +136,12 @@ const defaultPeriod = getDefaultPricingTab();
                       >
                         {periodState?.showStrikethrough
                           ? copy.periodClosed
-                          : (periodState?.opensLabel ?? copy.periodClosed)}
+                          : period.id === 'day-of'
+                            ? copy.periodAtDoor
+                            : (periodState?.opensLabel ??
+                                (periodState?.status === 'upcoming'
+                                  ? copy.periodNotYetOpen
+                                  : copy.periodClosed))}
                       </span>
                     )
                   }
@@ -180,32 +191,19 @@ const defaultPeriod = getDefaultPricingTab();
 </section>
 
 <style>
-  .pricing-tab--closed::after {
-    content: '';
-    position: absolute;
-    left: 8%;
-    right: 8%;
-    top: 50%;
-    height: 2px;
-    background: #ef4444;
-    transform: rotate(-8deg);
-    pointer-events: none;
+  .pricing-tab--closed {
+    opacity: 0.75;
   }
 
-  .pricing-register--closed {
-    position: relative;
-  }
-
-  .pricing-register--closed::after {
-    content: '';
+  .pricing-tab-strike {
     position: absolute;
-    left: 10%;
-    right: 10%;
+    left: 4%;
     top: 50%;
-    height: 2px;
-    background: #ef4444;
-    transform: rotate(-8deg);
-    pointer-events: none;
+    z-index: 1;
+    width: 118%;
+    max-height: 1.05rem;
+    transform: translateY(-50%) rotate(-9deg);
+    object-fit: fill;
   }
 </style>
 
