@@ -1,5 +1,8 @@
 ---
 import { copy, navLinks, site } from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
+
+const registration = getRegistrationState();
 ---
 
 <header data-nav class="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-md">
@@ -16,8 +19,8 @@ import { copy, navLinks, site } from '../data/site';
       ))}
     </nav>
 
-    <a href={site.registerUrl} class="btn-primary text-xs md:text-sm">
-      {copy.heroCtaRegister}
+    <a href={registration.ctaHref} class="btn-primary text-xs md:text-sm">
+      {registration.ctaLabel}
     </a>
   </div>
 </header>

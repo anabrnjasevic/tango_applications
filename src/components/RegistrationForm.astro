@@ -3,183 +3,200 @@ import {
   dancingYearsOptions,
   formEntries,
   googleForm,
-  individualTicketChoices,
-  packageChoices,
+  individualTicketGroups,
   roleOptions,
   yesNoOptions,
 } from '../data/form';
 import { fieldLimits } from '../lib/form-security';
-import {
-  individualTicketsAvailableFrom,
-  isIndividualTicketsAvailable,
-  showDisabledIndividualTickets,
-} from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
+import { showDisabledIndividualTickets } from '../data/site';
+
+const registration = getRegistrationState();
 
 const turnstileSiteKey =
   import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ??
   (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
 
-const individualTicketsAvailable = isIndividualTicketsAvailable();
 const showIndividualTickets =
-  individualTicketsAvailable || showDisabledIndividualTickets;
+  registration.individualTicketsAvailable || showDisabledIndividualTickets;
 ---
 
-<form id="registration-form" class="space-y-8" novalidate>
-  <fieldset class="space-y-4">
-    <legend class="font-display text-2xl text-brand-light">Contact information</legend>
+{
+  !registration.isRegistrationOpen ? (
+    <div class="rounded-2xl border border-white/10 bg-surface-card p-8 text-center">
+      <p class="font-display text-2xl text-brand-light">
+        {registration.isBeforeOpen
+          ? registration.registrationNotOpenMessage
+          : registration.registrationClosedMessage}
+      </p>
+      <a href="#tickets" class="btn-primary mt-6 inline-flex">
+        {registration.ctaLabel}
+      </a>
+    </div>
+  ) : (
+    <form id="registration-form" class="space-y-8" novalidate>
+      <fieldset class="space-y-4">
+        <legend class="font-display text-2xl text-brand-light">Contact information</legend>
 
-    <label class="field">
-      <span class="field-label">Surname and name *</span>
-      <input type="text" name="name" required autocomplete="name" maxlength={fieldLimits.name} class="field-input" />
-    </label>
-
-    <label class="field">
-      <span class="field-label">Email *</span>
-      <input type="email" name="email" required autocomplete="email" maxlength={fieldLimits.email} class="field-input" />
-    </label>
-
-    <label class="field">
-      <span class="field-label">Phone number *</span>
-      <input type="tel" name="phone" required autocomplete="tel" maxlength={fieldLimits.phone} class="field-input" />
-    </label>
-
-    <label class="field">
-      <span class="field-label">Country and place *</span>
-      <input type="text" name="location" required autocomplete="address-level1" maxlength={fieldLimits.location} class="field-input" />
-    </label>
-  </fieldset>
-
-  <fieldset class="space-y-3">
-    <legend class="field-label mb-1 block">How long have you been dancing? *</legend>
-    {
-      dancingYearsOptions.map((option) => (
-        <label class="choice">
-          <input type="radio" name="dancingYears" value={option} required class="choice-input" />
-          <span>{option}</span>
+        <label class="field">
+          <span class="field-label">Surname and name *</span>
+          <input type="text" name="name" required autocomplete="name" maxlength={fieldLimits.name} class="field-input" />
         </label>
-      ))
-    }
-  </fieldset>
 
-  <fieldset class="space-y-3">
-    <legend class="field-label mb-1 block">Have you performed as a tango dancer? *</legend>
-    {
-      yesNoOptions.map((option) => (
-        <label class="choice">
-          <input type="radio" name="performed" value={option} required class="choice-input" />
-          <span>{option}</span>
+        <label class="field">
+          <span class="field-label">Email *</span>
+          <input type="email" name="email" required autocomplete="email" maxlength={fieldLimits.email} class="field-input" />
         </label>
-      ))
-    }
-  </fieldset>
 
-  <fieldset class="space-y-3">
-    <legend class="field-label mb-1 block">Are you a tango instructor? *</legend>
-    {
-      yesNoOptions.map((option) => (
-        <label class="choice">
-          <input type="radio" name="instructor" value={option} required class="choice-input" />
-          <span>{option}</span>
+        <label class="field">
+          <span class="field-label">Phone number *</span>
+          <input type="tel" name="phone" required autocomplete="tel" maxlength={fieldLimits.phone} class="field-input" />
         </label>
-      ))
-    }
-  </fieldset>
 
-  <fieldset class="space-y-3">
-    <legend class="field-label mb-1 block">I apply as: *</legend>
-    {
-      roleOptions.map((option) => (
-        <label class="choice">
-          <input
-            type="radio"
-            name="role"
-            value={option.value}
-            required
-            class="choice-input"
-            data-needs-partner={option.needsPartner ? 'true' : undefined}
-          />
-          <span>{option.label}</span>
+        <label class="field">
+          <span class="field-label">Country and place *</span>
+          <input type="text" name="location" required autocomplete="address-level1" maxlength={fieldLimits.location} class="field-input" />
         </label>
-      ))
-    }
-    <label id="partner-field" class="field hidden">
-      <span class="field-label">Partner's surname and name *</span>
-      <input type="text" name="partnerName" maxlength={fieldLimits.partnerName} class="field-input" />
-    </label>
-  </fieldset>
+      </fieldset>
 
-  <fieldset class="space-y-3">
-    <legend class="field-label mb-1 block">Choose your package: *</legend>
-    {
-      packageChoices.map((option) => (
-        <label class="choice">
-          <input type="checkbox" name="packages" value={option.value} class="choice-input" />
-          <span>{option.label}</span>
-        </label>
-      ))
-    }
-  </fieldset>
-
-  {
-    showIndividualTickets && (
       <fieldset class="space-y-3">
-        <legend class="field-label mb-1 block">Individual tickets</legend>
-        {!individualTicketsAvailable && (
-          <p class="text-sm text-white/50">
-            Available from {new Date(`${individualTicketsAvailableFrom}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} (Regular registration).
-          </p>
-        )}
+        <legend class="field-label mb-1 block">How long have you been dancing? *</legend>
         {
-          individualTicketChoices.map((option) => (
-            <label class:list={['choice', !individualTicketsAvailable && 'opacity-50']}>
+          dancingYearsOptions.map((option) => (
+            <label class="choice">
+              <input type="radio" name="dancingYears" value={option} required class="choice-input" />
+              <span>{option}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      <fieldset class="space-y-3">
+        <legend class="field-label mb-1 block">Have you performed as a tango dancer? *</legend>
+        {
+          yesNoOptions.map((option) => (
+            <label class="choice">
+              <input type="radio" name="performed" value={option} required class="choice-input" />
+              <span>{option}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      <fieldset class="space-y-3">
+        <legend class="field-label mb-1 block">Are you a tango instructor? *</legend>
+        {
+          yesNoOptions.map((option) => (
+            <label class="choice">
+              <input type="radio" name="instructor" value={option} required class="choice-input" />
+              <span>{option}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      <fieldset class="space-y-3">
+        <legend class="field-label mb-1 block">I apply as: *</legend>
+        {
+          roleOptions.map((option) => (
+            <label class="choice">
               <input
-                type="checkbox"
-                name="packages"
+                type="radio"
+                name="role"
                 value={option.value}
+                required
                 class="choice-input"
-                disabled={!individualTicketsAvailable}
+                data-needs-partner={option.needsPartner ? 'true' : undefined}
               />
               <span>{option.label}</span>
             </label>
           ))
         }
+        <label id="partner-field" class="field hidden">
+          <span class="field-label">Partner's surname and name *</span>
+          <input type="text" name="partnerName" maxlength={fieldLimits.partnerName} class="field-input" />
+        </label>
       </fieldset>
-    )
-  }
 
-  <label class="field">
-    <span class="field-label">Anything you want to share?</span>
-    <textarea name="notes" rows="4" maxlength={fieldLimits.notes} class="field-input resize-y"></textarea>
-  </label>
+      <fieldset class="space-y-3">
+        <legend class="field-label mb-1 block">Choose your package: *</legend>
+        {
+          registration.formPackages.map((option) => (
+            <label class="choice">
+              <input type="checkbox" name="packages" value={option.value} class="choice-input" />
+              <span>{option.label}</span>
+            </label>
+          ))
+        }
+      </fieldset>
 
-  <label class="field-honeypot" aria-hidden="true">
-    <span>Website</span>
-    <input type="text" name="website" tabindex="-1" autocomplete="off" />
-  </label>
+      {
+        showIndividualTickets && (
+          <fieldset class="space-y-3">
+            <legend class="field-label mb-1 block">Individual tickets</legend>
+            {!registration.individualTicketsAvailable && (
+              <p class="text-sm text-white/50">
+                Available from {registration.individualTicketsAvailableFromLabel} (Regular registration).
+              </p>
+            )}
+            {
+              individualTicketGroups.map((group) => (
+                <div class="space-y-2">
+                  <p class="text-sm font-semibold uppercase tracking-wider text-brand">{group.category}</p>
+                  {group.choices.map((option) => (
+                    <label class:list={['choice', !registration.individualTicketsAvailable && 'opacity-50']}>
+                      <input
+                        type="checkbox"
+                        name="packages"
+                        value={option.value}
+                        class="choice-input"
+                        disabled={!registration.individualTicketsAvailable}
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              ))
+            }
+          </fieldset>
+        )
+      }
 
-  {
-    turnstileSiteKey ? (
-      <div
-        id="turnstile-widget"
-        class="cf-turnstile"
-        data-sitekey={turnstileSiteKey}
-        data-theme="dark"
-      />
-    ) : (
-      <p class="text-sm text-red-300">Registration is temporarily unavailable. Missing Turnstile configuration.</p>
-    )
-  }
+      <label class="field">
+        <span class="field-label">Anything you want to share?</span>
+        <textarea name="notes" rows="4" maxlength={fieldLimits.notes} class="field-input resize-y"></textarea>
+      </label>
 
-  <p id="form-message" class="hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></p>
+      <label class="field-honeypot" aria-hidden="true">
+        <span>Website</span>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" />
+      </label>
 
-  <button
-    type="submit"
-    class="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
-    disabled={!turnstileSiteKey}
-  >
-    Submit application
-  </button>
-</form>
+      {
+        turnstileSiteKey ? (
+          <div
+            id="turnstile-widget"
+            class="cf-turnstile"
+            data-sitekey={turnstileSiteKey}
+            data-theme="dark"
+          />
+        ) : (
+          <p class="text-sm text-red-300">Registration is temporarily unavailable. Missing Turnstile configuration.</p>
+        )
+      }
+
+      <p id="form-message" class="hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></p>
+
+      <button
+        type="submit"
+        class="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={!turnstileSiteKey}
+      >
+        Submit application
+      </button>
+    </form>
+  )
+}
 
 <iframe
   id="google-form-target"
@@ -197,6 +214,7 @@ const showIndividualTickets =
     entries: formEntries,
     coupleOptionValue: roleOptions.find((option) => option.needsPartner)?.value ?? '',
     turnstileEnabled: Boolean(turnstileSiteKey),
+    registrationOpen: registration.isRegistrationOpen,
   }}
 >
   const form = document.getElementById('registration-form');
@@ -300,7 +318,7 @@ const showIndividualTickets =
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (!form || !turnstileEnabled) return;
+    if (!form || !turnstileEnabled || !registrationOpen) return;
 
     const packages = Array.from(form.querySelectorAll('input[name="packages"]:checked')).map(
       (input) => input.value,

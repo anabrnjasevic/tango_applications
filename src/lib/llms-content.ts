@@ -28,7 +28,12 @@ function formatPricing() {
         .join('\n');
       const individuals =
         period.individuals.length > 0
-          ? `\nIndividual tickets:\n${period.individuals.map((item) => `- ${item.name}: ${item.price}`).join('\n')}`
+          ? `\nIndividual tickets:\n${period.individuals
+              .map(
+                (group) =>
+                  `- ${group.category} (${group.price}):\n${group.items.map((item) => `  - ${item}`).join('\n')}`,
+              )
+              .join('\n')}`
           : '';
       return `### ${period.name}\n${packages}${individuals}`;
     })
@@ -138,13 +143,18 @@ ${pricing.periods
       .join('\n');
     const individuals =
       period.individuals.length > 0
-        ? `\nIndividual:\n${period.individuals.map((item) => `${item.name} — ${item.price}`).join('\n')}`
+        ? `\nIndividual:\n${period.individuals
+            .map(
+              (group) =>
+                `${group.category} — ${group.price}\n${group.items.map((item) => `- ${item}`).join('\n')}`,
+            )
+            .join('\n')}`
         : '';
     return `${period.name}\n${packages}${individuals}`;
   })
   .join('\n\n')}
 
-${pricing.notes.map((note) => `- ${note}`).join('\n')}
+${pricing.notes.map((note) => `- ${note.text}`).join('\n')}
 
 TESTIMONIALS
 ============

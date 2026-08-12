@@ -1,5 +1,8 @@
 ---
 import { copy, site } from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
+
+const registration = getRegistrationState();
 ---
 
 <section id="contact" class="section-pad bg-surface">
@@ -27,8 +30,8 @@ import { copy, site } from '../data/site';
       <p class="text-white/70">
         {copy.contactCard}
       </p>
-      <a href={site.registerUrl} class="btn-primary mt-8 w-full text-center">
-        {copy.contactCardCta}
+      <a href={registration.ctaHref} class="btn-primary mt-8 w-full text-center">
+        {registration.isRegistrationOpen ? copy.contactCardCta : registration.ctaLabel}
       </a>
     </div>
   </div>

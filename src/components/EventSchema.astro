@@ -1,10 +1,19 @@
 ---
 import { artists, event, pricing, seo, site, siteUrl } from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
 
 const imageUrl = new URL(seo.ogImage, siteUrl).href;
 const eventUrl = new URL('/', siteUrl).href;
+const registration = getRegistrationState();
 
-const regularPricing = pricing.periods.find((period) => period.id === 'regular') ?? pricing.periods[0];
+const offersPeriod =
+  pricing.periods.find((period) => period.id === registration.activePeriodId) ??
+  pricing.periods.find((period) => period.id === 'regular') ??
+  pricing.periods[0];
+
+const availability = registration.isRegistrationOpen
+  ? 'https://schema.org/InStock'
+  : 'https://schema.org/SoldOut';
 
 const schema = {
   '@context': 'https://schema.org',
@@ -36,13 +45,19 @@ const schema = {
     '@type': 'Person',
     name,
   })),
-  offers: regularPricing.packages.map((tier) => ({
+  offers: offersPeriod.packages.map((tier) => ({
     '@type': 'Offer',
     name: tier.name,
     price: tier.price.replace('€', ''),
     priceCurrency: 'EUR',
-    availability: 'https://schema.org/InStock',
+    availability,
     url: `${eventUrl}#tickets`,
+    ...('startDate' in offersPeriod && 'endDate' in offersPeriod
+      ? {
+          validFrom: offersPeriod.startDate,
+          validThrough: offersPeriod.endDate,
+        }
+      : {}),
   })),
   about: artists.headline,
 };

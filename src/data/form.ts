@@ -55,9 +55,35 @@ export const packageOptions = [
     label: 'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
     group: 'package' as const,
   },
-  { value: 'Individual Milonga', label: 'Individual Milonga', group: 'individual' as const },
-  { value: 'Individual Workshop', label: 'Individual Workshop', group: 'individual' as const },
-  { value: 'Individual Masterclass', label: 'Individual Masterclass', group: 'individual' as const },
+  { value: 'Individual Milonga: Friday Welcome Milonga', label: 'Friday Welcome Milonga', group: 'individual' as const, category: 'Individual Milonga' },
+  { value: 'Individual Milonga: Saturday Milonga', label: 'Saturday Milonga', group: 'individual' as const, category: 'Individual Milonga' },
+  {
+    value: 'Individual Milonga: Sunday Gala Milonga and Show',
+    label: 'Sunday Gala Milonga and Show',
+    group: 'individual' as const,
+    category: 'Individual Milonga',
+  },
+  { value: 'Individual Workshop: Key Knowledge', label: 'Key Knowledge', group: 'individual' as const, category: 'Individual Workshops' },
+  { value: 'Individual Workshop: Tango Vals', label: 'Tango Vals', group: 'individual' as const, category: 'Individual Workshops' },
+  {
+    value: 'Individual Workshop: Complex Salon Sequences',
+    label: 'Complex Salon Sequences',
+    group: 'individual' as const,
+    category: 'Individual Workshops',
+  },
+  { value: 'Individual Workshop: Milonga', label: 'Milonga', group: 'individual' as const, category: 'Individual Workshops' },
+  {
+    value: 'Individual Masterclass: Escenario 1: Introductory',
+    label: 'Escenario 1: Introductory',
+    group: 'individual' as const,
+    category: 'Individual Masterclasses',
+  },
+  {
+    value: 'Individual Masterclass: Escenario 2: Stage elements',
+    label: 'Escenario 2: Stage elements',
+    group: 'individual' as const,
+    category: 'Individual Masterclasses',
+  },
 ] as const;
 
 export type PackageOption = (typeof packageOptions)[number];
@@ -66,6 +92,19 @@ export const validPackageValues = packageOptions.map((option) => option.value);
 
 export const packageChoices = packageOptions.filter((option) => option.group === 'package');
 export const individualTicketChoices = packageOptions.filter((option) => option.group === 'individual');
+
+export const individualTicketGroups = individualTicketChoices.reduce<
+  { category: string; choices: typeof individualTicketChoices[number][] }[]
+>((groups, option) => {
+  const category = option.category;
+  const existing = groups.find((group) => group.category === category);
+  if (existing) {
+    existing.choices.push(option);
+  } else {
+    groups.push({ category, choices: [option] });
+  }
+  return groups;
+}, []);
 
 export type RegistrationPayload = {
   name: string;

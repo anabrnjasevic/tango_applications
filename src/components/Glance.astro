@@ -1,5 +1,8 @@
 ---
 import { copy, glance, site } from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
+
+const registration = getRegistrationState();
 ---
 
 <section class="section-pad bg-surface">
@@ -21,8 +24,8 @@ import { copy, glance, site } from '../data/site';
     </div>
 
     <div data-reveal="fade" class="mt-12 text-center">
-      <a href={site.registerUrl} class="btn-primary">
-        Get a ticket
+      <a href={registration.ctaHref} class="btn-primary">
+        {registration.ctaLabel}
       </a>
     </div>
   </div>

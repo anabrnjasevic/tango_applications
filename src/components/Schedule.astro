@@ -1,5 +1,8 @@
 ---
 import { copy, schedule, site } from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
+
+const registration = getRegistrationState();
 ---
 
 <section id="schedule" class="section-pad bg-surface-elevated">
@@ -13,8 +16,8 @@ import { copy, schedule, site } from '../data/site';
           <p>{line}</p>
         ))}
       </div>
-      <a data-reveal="left" data-reveal-delay="200" href={site.registerUrl} class="btn-primary mt-8">
-        {copy.scheduleCta}
+      <a data-reveal="left" data-reveal-delay="200" href={registration.ctaHref} class="btn-primary mt-8">
+        {registration.ctaLabel}
       </a>
     </div>
 

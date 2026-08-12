@@ -1,31 +1,41 @@
 ---
 import { artists, copy, site } from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
 
+const registration = getRegistrationState();
 const { videoUrl } = artists;
 ---
 
 <section id="artists" class="section-pad bg-surface">
   <div class="mx-auto max-w-7xl">
-    <h2 data-reveal class="font-display mb-12 text-4xl leading-tight text-white md:text-6xl">
-      Maestros
-    </h2>
+    <div data-reveal class="mb-12">
+      <h2 class="font-display text-4xl leading-tight text-white md:text-6xl">
+        Maestros
+      </h2>
+      <p class="mt-3 font-bold text-brand text-2xl md:text-3xl">
+        {artists.fullNames}
+      </p>
+    </div>
 
     <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-12">
       <div data-reveal="left" class="space-y-6 text-lg leading-relaxed text-white/75 md:text-xl">
         <p>{artists.tagline}</p>
 
-        <p>{artists.credentials}</p>
+        <p>
+          <span class="font-bold text-brand">{artists.credentials}</span>,
+        </p>
 
         <p>
           {artists.introBeforeEmphasis}
           <span class="font-semibold uppercase text-brand-light">{artists.introEmphasis}</span>
+          {' '}
+          <span class="font-bold text-brand">{artists.introTangoDePista}</span>
+          {' and '}
+          <span class="font-bold text-brand">{artists.introTangoEscenario}</span>
           {artists.introAfterEmphasis}
         </p>
 
-        <p class="font-semibold uppercase tracking-wider text-brand md:text-xl">
-          {artists.calloutEmphasis}
-          <span class="normal-case tracking-normal">{artists.calloutRest}</span>
-        </p>
+        <p>{artists.callout}</p>
 
         {artists.paragraphs.map((paragraph) => (
           <p>{paragraph}</p>
@@ -80,9 +90,9 @@ const { videoUrl } = artists;
       class="mt-14 rounded-2xl border border-brand/30 bg-surface-elevated px-6 py-10 text-center md:px-10 md:py-12">
       <p class="font-display text-2xl text-white md:text-3xl">{copy.saveTheDate}</p>
       <a
-        href={site.registerUrl}
+        href={registration.ctaHref}
         class="btn-primary mt-8 inline-flex px-12 py-4 text-base md:text-lg">
-        {copy.heroCtaRegister}
+        {registration.ctaLabel}
       </a>
     </div>
 

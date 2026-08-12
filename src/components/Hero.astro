@@ -1,5 +1,8 @@
 ---
 import { copy, site } from '../data/site';
+import { getRegistrationState } from '../lib/registration-schedule';
+
+const registration = getRegistrationState();
 ---
 
 <section class="relative min-h-screen overflow-hidden pt-20">
@@ -32,8 +35,8 @@ import { copy, site } from '../data/site';
       <a href="#schedule" class="btn-primary">
         {copy.heroCtaProgram}
       </a>
-      <a href={site.registerUrl} class="btn-outline">
-        {copy.heroCtaRegister}
+      <a href={registration.ctaHref} class="btn-outline">
+        {registration.ctaLabel}
       </a>
     </div>
   </div>
@@ -51,11 +54,11 @@ import { copy, site } from '../data/site';
       {copy.saveTheDate}
     </p>
     <a
-      href={site.registerUrl}
+      href={registration.ctaHref}
       data-reveal="scale"
       data-reveal-delay="200"
       class="rounded-full bg-black px-8 py-3 text-sm font-semibold uppercase tracking-wider text-white transition-all duration-300 hover:scale-105 hover:bg-black/80 active:scale-95">
-      {copy.heroCtaRegister}
+      {registration.ctaLabel}
     </a>
   </div>
 </section>

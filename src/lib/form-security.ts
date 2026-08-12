@@ -7,7 +7,10 @@ import {
   yesNoOptions,
   type RegistrationPayload,
 } from '../data/form';
-import { isIndividualTicketsAvailable } from '../data/site';
+import {
+  getRegistrationState,
+  isIndividualTicketsAvailable,
+} from './registration-schedule';
 
 export const fieldLimits = {
   name: 120,
@@ -94,6 +97,21 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
     return { ok: false, error: 'Invalid package selection.' };
   }
 
+  const registration = getRegistrationState();
+  if (!registration.isRegistrationOpen) {
+    return {
+      ok: false,
+      error: registration.isBeforeOpen
+        ? 'Registration is not open yet.'
+        : 'Online registration has closed.',
+    };
+  }
+
+  const allowedPackages = new Set(registration.allowedPackageValues);
+  if (!body.packages.every((pkg) => typeof pkg === 'string' && allowedPackages.has(pkg))) {
+    return { ok: false, error: 'That package is not available in the current registration period.' };
+  }
+
   const individualValues = new Set(individualTicketChoices.map((option) => option.value));
   const hasIndividualSelection = body.packages.some(
     (pkg) => typeof pkg === 'string' && individualValues.has(pkg),
@@ -115,6 +133,17 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
     return { ok: false, error: 'Please enter your partner\'s name.' };
   }
 
+  const noteParts: string[] = [];
+  if (registration.activePeriodName) {
+    noteParts.push(`Pricing tier: ${registration.activePeriodName}`);
+  }
+  if (partnerName) {
+    noteParts.push(`Couple partner: ${partnerName}`);
+  }
+  if (typeof body.notes === 'string' && body.notes.trim()) {
+    noteParts.push(sanitizeSheetText(body.notes).slice(0, fieldLimits.notes));
+  }
+
   const data: RegistrationPayload = {
     name: sanitizeSheetText(body.name).slice(0, fieldLimits.name),
     email: sanitizeEmail(body.email),
@@ -125,10 +154,7 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
     instructor: body.instructor as (typeof yesNoOptions)[number],
     role: body.role,
     packages: body.packages as string[],
-    ...(partnerName ? { partnerName: partnerName.slice(0, fieldLimits.partnerName) } : {}),
-    ...(typeof body.notes === 'string' && body.notes.trim()
-      ? { notes: sanitizeSheetText(body.notes).slice(0, fieldLimits.notes) }
-      : {}),
+    ...(noteParts.length ? { notes: noteParts.join('\n\n') } : {}),
   };
 
   if (!data.name || !data.phone || !data.location) {

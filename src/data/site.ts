@@ -2,7 +2,7 @@ export const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'http://localhost:432
 
 export const site = {
   title: 'Camino Tango Weekend',
-  tagline: 'Carlos & Mirella Santos David',
+  tagline: 'Carlos & Mirella',
   date: 'November 20–22, 2026',
   dateShort: 'Nov 20–22nd 2026',
   city: 'Novi Sad',
@@ -10,8 +10,8 @@ export const site = {
   location: 'Novi Sad, Serbia',
   locationShort: 'Novi Sad, RS',
   registerUrl: '#register',
-  contactEmail: 'hello@caminotango.com',
-  contactPhone: '+381 63 000 0000',
+  contactEmail: 'camino.serbia@gmail.com',
+  contactPhone: '+381691372707',
   address: 'Petra Drapšina 35, Novi Sad',
   url: siteUrl,
 } as const;
@@ -36,7 +36,7 @@ export const event = {
   addressCountry: 'RS',
   organizer: {
     name: 'Camino Tango',
-    email: 'hello@caminotango.com',
+    email: 'camino.serbia@gmail.com',
   },
   performers: ['Carlos Santos David', 'Mirella Santos David'],
 } as const;
@@ -54,9 +54,14 @@ export const copy = {
   ],
   scheduleCta: 'Register',
   schedulePdfUrl: null as string | null,
-  djsSubhead: 'Curated tandas every night — from golden age classics to modern nuevo.',
+  djsSubhead: 'Curated tandas every night — from golden age classics to modern sound.',
   registerHeadline: 'Register',
   registerIntro: 'Complete the form below to register for the weekend.',
+  registrationNotOpenYet: 'Registration opens {date}. Compare prices above.',
+  registrationClosedOnline:
+    'Online registration has closed. Door registration is available at the event.',
+  periodClosed: 'Closed',
+  viewPrices: 'View prices',
   contactHeadline: 'Get in touch',
   contactIntro: "We'd love to hear from you!",
   contactCard: 'Ready to join us? Complete the registration form above.',
@@ -79,14 +84,16 @@ export const navLinks = [
 
 export const artists = {
   headline: 'Carlos and Mirella 7 Time Mundial Finalists',
+  fullNames: 'Carlos & Mirella Santos David',
   names: 'Carlos & Mirella,',
   tagline: 'a truly unique tango couple,',
-  credentials: 'seven-time finalists at the Mundial de Tango in Buenos Aires,',
+  credentials: 'seven-time finalists at the Mundial de Tango in Buenos Aires',
   introBeforeEmphasis: 'European Champions ',
   introEmphasis: 'IN BOTH',
-  introAfterEmphasis: ' Tango de Pista and Tango Escenario, are coming to Serbia for the very first time!',
-  calloutEmphasis: 'THEY WILL',
-  calloutRest: ' generously share their extraordinary knowledge and deep experience!',
+  introTangoDePista: 'Tango de Pista',
+  introTangoEscenario: 'Tango Escenario',
+  introAfterEmphasis: ', are coming to Serbia for the very first time!',
+  callout: 'They will generously share their extraordinary knowledge and deep experience!',
   paragraphs: [
     'Renowned for their elegance, musicality, and captivating performances, they have shared the stage with Andrea Bocelli, appeared on national television, and served as judges at international tango competitions.',
     'As teachers, they combine technical excellence with a warm, engaging approach, inspiring dancers around the world through performances, workshops, and a deep commitment to the art of Argentine tango.',
@@ -143,7 +150,6 @@ export const schedule = [
     tag: 'DJ Carlos Santos David',
     details: [
       'Reads the energy of the room instantly, using sophisticated orchestration to keep couples deeply connected and inspired.',
-      'A DJ for the dancer, by a dancer — built on the pillars of Biagi, Caló, Tanturi, and Di Sarli.',
     ],
   },
   {
@@ -152,7 +158,7 @@ export const schedule = [
     day: 'Saturday, Nov 21st',
     tag: 'All levels',
     details: [
-      'Key Knowledge: A tango must-have!',
+      'A tango must-have!',
       'Tips for a comfortable embrace, stable walk, good connection, and posture (All Levels)',
     ],
   },
@@ -237,7 +243,7 @@ export const venue = {
     },
     {
       title: 'Milongas',
-      name: 'SPENS — Stonotenisksa dvorana',
+      name: 'SPENS — Stonoteniska dvorana',
       address: ['Sutjeska 2', 'Novi Sad'],
       description:
         'Step onto 1,400 m² of wooden floor in a historic hall of SPENS, designed for the steps of the champions of then and now.',
@@ -246,31 +252,43 @@ export const venue = {
   ],
 } as const;
 
-/** Individual ticket options become selectable from this date (Regular registration). Set earlier to enable sooner. */
-export const individualTicketsAvailableFrom = '2020-01-01';
-
 /**
- * When true, individual tickets show as disabled before their available date.
+ * When true, individual tickets show as disabled before Regular registration starts.
  * When false, they are hidden until the date.
  */
 export const showDisabledIndividualTickets = true;
 
-export function isIndividualTicketsAvailable(asOf: Date = new Date()): boolean {
-  return asOf >= new Date(`${individualTicketsAvailableFrom}T00:00:00`);
-}
+export type IndividualTicketGroup = {
+  category: string;
+  price: string;
+  items: string[];
+};
 
 export const pricing = {
   headline: 'Prices & Registration',
   subheadline: "Don't miss the early bird prices!",
   notes: [
-    'For super early bird and early bird offers, you can only buy the proposed packages — not individual workshops, masterclasses, or milongas.',
-    'During regular registration and on the day of the event, you can buy packages or individual workshops, masterclasses, or milongas.',
-    'Masterclasses are not part of the Full Pass. Priority is given to dance instructors, performers, and experienced dancers. Due to limited capacity, the organizers reserve the right to accept or reject masterclass applications. You will be notified via email.',
+    {
+      text: 'For super early bird and early bird offers, you can only buy the proposed packages — not individual workshops, masterclasses, or milongas.',
+    },
+    {
+      text: 'During regular registration and on the day of the event, you can buy packages or individual workshops, masterclasses, or milongas.',
+    },
+    {
+      text: 'Masterclasses are not part of the Full Pass. Priority is given to dance instructors, performers, and experienced dancers. Due to limited capacity, the organizers reserve the right to accept or reject masterclass applications. You will be notified via email.',
+    },
+    {
+      id: 'pricing-note-door',
+      text: 'After November 15th, registration will be possible at the door of the event.',
+    },
   ],
   periods: [
     {
       id: 'super-early',
       name: 'Super Early Bird',
+      dates: '28/08 - 31/08',
+      startDate: '2026-08-28',
+      endDate: '2026-08-31',
       packages: [
         { name: 'Milonga Pass', description: '3 milongas', price: '€50', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€70', featured: false },
@@ -287,11 +305,14 @@ export const pricing = {
           featured: true,
         },
       ],
-      individuals: [] as { name: string; price: string }[],
+      individuals: [] as IndividualTicketGroup[],
     },
     {
       id: 'early',
       name: 'Early Bird',
+      dates: '01/09 - 07/09',
+      startDate: '2026-09-01',
+      endDate: '2026-09-07',
       packages: [
         { name: 'Milonga Pass', description: '3 milongas', price: '€60', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€80', featured: false },
@@ -308,11 +329,14 @@ export const pricing = {
           featured: true,
         },
       ],
-      individuals: [] as { name: string; price: string }[],
+      individuals: [] as IndividualTicketGroup[],
     },
     {
       id: 'regular',
       name: 'Regular',
+      dates: '08/09 - 15/11',
+      startDate: '2026-09-08',
+      endDate: '2026-11-15',
       packages: [
         { name: 'Milonga Pass', description: '3 milongas', price: '€70', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€90', featured: false },
@@ -330,14 +354,29 @@ export const pricing = {
         },
       ],
       individuals: [
-        { name: 'Individual Milonga', price: '€25' },
-        { name: 'Individual Workshop', price: '€25' },
-        { name: 'Individual Masterclass', price: '€30' },
+        {
+          category: 'Individual Milonga',
+          price: '€25',
+          items: ['Friday Welcome Milonga', 'Saturday Milonga', 'Sunday Gala Milonga and Show'],
+        },
+        {
+          category: 'Individual Workshops',
+          price: '€25',
+          items: ['Key Knowledge', 'Tango Vals', 'Complex Salon Sequences', 'Milonga'],
+        },
+        {
+          category: 'Individual Masterclasses',
+          price: '€30',
+          items: ['Escenario 1: Introductory', 'Escenario 2: Stage elements'],
+        },
       ],
     },
     {
       id: 'day-of',
       name: 'Day of Event',
+      startDate: '2026-11-16',
+      endDate: '2026-11-22',
+      footnoteNoteId: 'pricing-note-door',
       packages: [
         { name: 'Milonga Pass', description: '3 milongas', price: '€80', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€110', featured: false },
@@ -355,9 +394,21 @@ export const pricing = {
         },
       ],
       individuals: [
-        { name: 'Individual Milonga', price: '€30' },
-        { name: 'Individual Workshop', price: '€30' },
-        { name: 'Individual Masterclass', price: '€35' },
+        {
+          category: 'Individual Milonga',
+          price: '€30',
+          items: ['Friday Welcome Milonga', 'Saturday Milonga', 'Sunday Gala Milonga and Show'],
+        },
+        {
+          category: 'Individual Workshops',
+          price: '€30',
+          items: ['Key Knowledge', 'Tango Vals', 'Complex Salon Sequences', 'Milonga'],
+        },
+        {
+          category: 'Individual Masterclasses',
+          price: '€35',
+          items: ['Escenario 1: Introductory', 'Escenario 2: Stage elements'],
+        },
       ],
     },
   ],
