@@ -47,11 +47,25 @@ export const roleOptions = [
 ] as const;
 
 export const packageOptions = [
-  'Full Pass: 4 Workshops & 3 Milongas',
-  'Milonga Pass: 3 Milongas',
-  'Workshop Pass: 4 Workshops',
-  'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
+  { value: 'Full Pass: 4 Workshops & 3 Milongas', label: 'Full Pass: 4 Workshops & 3 Milongas', group: 'package' as const },
+  { value: 'Milonga Pass: 3 Milongas', label: 'Milonga Pass: 3 Milongas', group: 'package' as const },
+  { value: 'Workshop Pass: 4 Workshops', label: 'Workshop Pass: 4 Workshops', group: 'package' as const },
+  {
+    value: 'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
+    label: 'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
+    group: 'package' as const,
+  },
+  { value: 'Individual Milonga', label: 'Individual Milonga', group: 'individual' as const },
+  { value: 'Individual Workshop', label: 'Individual Workshop', group: 'individual' as const },
+  { value: 'Individual Masterclass', label: 'Individual Masterclass', group: 'individual' as const },
 ] as const;
+
+export type PackageOption = (typeof packageOptions)[number];
+
+export const validPackageValues = packageOptions.map((option) => option.value);
+
+export const packageChoices = packageOptions.filter((option) => option.group === 'package');
+export const individualTicketChoices = packageOptions.filter((option) => option.group === 'individual');
 
 export type RegistrationPayload = {
   name: string;

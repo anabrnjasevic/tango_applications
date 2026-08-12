@@ -117,12 +117,14 @@ ${formatSchedule()}
 VENUE
 =====
 ${venue.headline}
+${venue.walkingNote}
 
-${venue.workshops.title}
-${venue.workshops.body}
-
-${venue.milongas.title}
-${venue.milongas.body}
+${venue.locations
+  .map(
+    (location) =>
+      `${location.title}\n${location.name}\n${location.address.join(', ')}\n${location.description}`,
+  )
+  .join('\n\n')}
 
 PRICING
 =======

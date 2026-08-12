@@ -3,15 +3,25 @@ import {
   dancingYearsOptions,
   formEntries,
   googleForm,
-  packageOptions,
+  individualTicketChoices,
+  packageChoices,
   roleOptions,
   yesNoOptions,
 } from '../data/form';
 import { fieldLimits } from '../lib/form-security';
+import {
+  individualTicketsAvailableFrom,
+  isIndividualTicketsAvailable,
+  showDisabledIndividualTickets,
+} from '../data/site';
 
 const turnstileSiteKey =
   import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ??
   (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
+
+const individualTicketsAvailable = isIndividualTicketsAvailable();
+const showIndividualTickets =
+  individualTicketsAvailable || showDisabledIndividualTickets;
 ---
 
 <form id="registration-form" class="space-y-8" novalidate>
@@ -99,16 +109,43 @@ const turnstileSiteKey =
   </fieldset>
 
   <fieldset class="space-y-3">
-    <legend class="field-label mb-1 block">Choose your type of package: *</legend>
+    <legend class="field-label mb-1 block">Choose your package: *</legend>
     {
-      packageOptions.map((option) => (
+      packageChoices.map((option) => (
         <label class="choice">
-          <input type="checkbox" name="packages" value={option} class="choice-input" />
-          <span>{option}</span>
+          <input type="checkbox" name="packages" value={option.value} class="choice-input" />
+          <span>{option.label}</span>
         </label>
       ))
     }
   </fieldset>
+
+  {
+    showIndividualTickets && (
+      <fieldset class="space-y-3">
+        <legend class="field-label mb-1 block">Individual tickets</legend>
+        {!individualTicketsAvailable && (
+          <p class="text-sm text-white/50">
+            Available from {new Date(`${individualTicketsAvailableFrom}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} (Regular registration).
+          </p>
+        )}
+        {
+          individualTicketChoices.map((option) => (
+            <label class:list={['choice', !individualTicketsAvailable && 'opacity-50']}>
+              <input
+                type="checkbox"
+                name="packages"
+                value={option.value}
+                class="choice-input"
+                disabled={!individualTicketsAvailable}
+              />
+              <span>{option.label}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+    )
+  }
 
   <label class="field">
     <span class="field-label">Anything you want to share?</span>

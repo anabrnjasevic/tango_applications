@@ -52,7 +52,7 @@ export const copy = {
     'enroll in once-in-a-lifetime Escenario masterclass,',
     'or just enjoy the tandas — we have you covered.',
   ],
-  scheduleCta: 'Get a ticket',
+  scheduleCta: 'Register',
   schedulePdfUrl: null as string | null,
   djsSubhead: 'Curated tandas every night — from golden age classics to modern nuevo.',
   registerHeadline: 'Register',
@@ -68,11 +68,12 @@ export const copy = {
 } as const;
 
 export const navLinks = [
-  { label: 'Event info', href: '#artists' },
-  { label: 'Schedule', href: '#schedule' },
+  { label: 'Maestros', href: '#artists' },
   { label: 'DJs', href: '#djs' },
+  { label: 'Venues', href: '#venue' },
+  { label: 'Schedule', href: '#schedule' },
   { label: 'Prices', href: '#tickets' },
-  { label: 'Location', href: '#venue' },
+  { label: 'Registration', href: '#register' },
   { label: 'Contact', href: '#contact' },
 ] as const;
 
@@ -141,7 +142,7 @@ export const schedule = [
     day: 'Friday, Nov 20th',
     tag: 'DJ Carlos Santos David',
     details: [
-      'Immerse yourself in the sounds of The Golden Age!',
+      'Reads the energy of the room instantly, using sophisticated orchestration to keep couples deeply connected and inspired.',
       'A DJ for the dancer, by a dancer — built on the pillars of Biagi, Caló, Tanturi, and Di Sarli.',
     ],
   },
@@ -217,22 +218,46 @@ export const schedule = [
     day: 'Sunday, Nov 22nd',
     tag: 'DJ Shone',
     details: [
-      'Energetic, well-balanced golden age tandas — tandas that simply won\'t let you sit down!',
+      'Energetic, well-balanced tandas that simply won\'t let you sit down!',
     ],
   },
 ] as const;
 
 export const venue = {
-  headline: 'Venue Location',
-  workshops: {
-    title: 'Workshops',
-    body: 'Camino Tango School — Petra Drapšina 35, Novi Sad. Spacious studios with sprung floors, mirrors, and air conditioning.',
-  },
-  milongas: {
-    title: 'Milongas',
-    body: 'Camino Tango School — Petra Drapšina 35, Novi Sad. Professional lighting, quality sound, and the Sunday gala show with Carlos & Mirella.',
-  },
+  headline: 'Venues',
+  walkingNote: 'The two venues are about a 10-minute walk from each other.',
+  locations: [
+    {
+      title: 'Workshops',
+      name: 'Camino Tango',
+      address: ['Petra Drapšina 35', 'Novi Sad'],
+      description:
+        'Spacious studios with sprung floors and mirrors — home base for all workshops during the weekend.',
+      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Petra+Drap%C5%A1ina+35,+Novi+Sad,+Serbia',
+    },
+    {
+      title: 'Milongas',
+      name: 'SPENS — Stonotenisksa dvorana',
+      address: ['Sutjeska 2', 'Novi Sad'],
+      description:
+        'Step onto 1,400 m² of wooden floor in a historic hall of SPENS, designed for the steps of the champions of then and now.',
+      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=SPENS+Sutjeska+2+Novi+Sad+Serbia',
+    },
+  ],
 } as const;
+
+/** Individual ticket options become selectable from this date (Regular registration). Set earlier to enable sooner. */
+export const individualTicketsAvailableFrom = '2020-01-01';
+
+/**
+ * When true, individual tickets show as disabled before their available date.
+ * When false, they are hidden until the date.
+ */
+export const showDisabledIndividualTickets = true;
+
+export function isIndividualTicketsAvailable(asOf: Date = new Date()): boolean {
+  return asOf >= new Date(`${individualTicketsAvailableFrom}T00:00:00`);
+}
 
 export const pricing = {
   headline: 'Prices & Registration',

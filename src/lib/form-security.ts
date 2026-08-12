@@ -1,10 +1,13 @@
 import {
   dancingYearsOptions,
+  individualTicketChoices,
   packageOptions,
   roleOptions,
+  validPackageValues,
   yesNoOptions,
   type RegistrationPayload,
 } from '../data/form';
+import { isIndividualTicketsAvailable } from '../data/site';
 
 export const fieldLimits = {
   name: 120,
@@ -87,8 +90,16 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
   if (body.packages.length > fieldLimits.maxPackages) {
     return { ok: false, error: 'Too many packages selected.' };
   }
-  if (!body.packages.every((pkg) => packageOptions.includes(pkg as (typeof packageOptions)[number]))) {
+  if (!body.packages.every((pkg) => typeof pkg === 'string' && validPackageValues.includes(pkg))) {
     return { ok: false, error: 'Invalid package selection.' };
+  }
+
+  const individualValues = new Set(individualTicketChoices.map((option) => option.value));
+  const hasIndividualSelection = body.packages.some(
+    (pkg) => typeof pkg === 'string' && individualValues.has(pkg),
+  );
+  if (hasIndividualSelection && !isIndividualTicketsAvailable()) {
+    return { ok: false, error: 'Individual tickets are not available yet.' };
   }
   if (body.partnerName !== undefined && typeof body.partnerName !== 'string') {
     return { ok: false, error: 'Invalid partner name.' };
