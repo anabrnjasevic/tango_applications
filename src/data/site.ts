@@ -54,6 +54,10 @@ export const copy = {
   ],
   scheduleCta: 'Register',
   schedulePdfUrl: null as string | null,
+  milongaVenuesNote:
+    'Friday and Saturday milongas are at SPENS (Sutjeska 2, Novi Sad). The Sunday Gala Milonga and artist show is at RTV in Petrovaradin — limited to 100 people; sales close once capacity is reached.',
+  galaMilongaCapacityNote:
+    'Limited to 100 people at RTV — registration for this milonga closes once capacity is reached.',
   djsSubhead: 'Curated tandas every night — from golden age classics to modern sound.',
   registerHeadline: 'Register',
   registerIntro: 'Complete the form below to register for the weekend.',
@@ -105,7 +109,8 @@ export const artists = {
 Renowned for their elegance, musicality, and captivating performances, they have shared the stage with Andrea Bocelli, appeared on national television, and served as judges at international tango competitions.
 
 As teachers, they combine technical excellence with a warm, engaging approach, inspiring dancers around the world through performances, workshops, and a deep commitment to the art of Argentine tango.`,
-  gala: 'Artist Show: Gala Milonga Sunday Nov. 22nd',
+  gala: 'Artist Show: Sunday Gala Milonga at RTV · Nov. 22nd · limited to 100 people',
+  websiteUrl: 'https://carlosymirella.com/en/',
   videoUrl: '/videos/carlos-mirella.mp4',
   image: '/images/artist-feature.png',
 } as const;
@@ -150,6 +155,7 @@ export const schedule = [
     time: '20:00–00:00',
     day: 'Friday, Nov 20th',
     tag: 'DJ Carlos Santos David',
+    venue: 'SPENS — Stonoteniska dvorana, Sutjeska 2, Novi Sad',
     details: [
       'Reads the energy of the room instantly, using sophisticated orchestration to keep couples deeply connected and inspired.',
     ],
@@ -188,6 +194,7 @@ export const schedule = [
     time: '20:00–00:00',
     day: 'Saturday, Nov 21st',
     tag: 'DJ Marco Kang',
+    venue: 'SPENS — Stonoteniska dvorana, Sutjeska 2, Novi Sad',
     details: [
       'Traditional tango straight from Buenos Aires — with a touch of modern when the room calls for it.',
     ],
@@ -225,31 +232,52 @@ export const schedule = [
     time: '20:00–00:00',
     day: 'Sunday, Nov 22nd',
     tag: 'DJ Shone',
+    venue: 'RTV — Kamenički put 45, Petrovaradin',
+    venueNote:
+      'Limited to 100 people at RTV — registration for this milonga closes once capacity is reached.',
     details: [
       'Energetic, well-balanced tandas that simply won\'t let you sit down!',
+      'Artist show with Carlos & Mirella — a historic evening recorded by RTV.',
     ],
   },
 ] as const;
 
 export const venue = {
   headline: 'Venues',
-  walkingNote: 'The two venues are about a 10-minute walk from each other.',
+  walkingNote:
+    'Workshops are at Camino Tango in Novi Sad. Friday and Saturday milongas are at SPENS; the Sunday Gala Milonga is at RTV in Petrovaradin.',
   locations: [
     {
       title: 'Workshops',
       name: 'Camino Tango',
       address: ['Petra Drapšina 35', 'Novi Sad'],
+      email: 'camino.serbia@gmail.com',
       description:
         'Spacious studios with sprung floors and mirrors — home base for all workshops during the weekend.',
       mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Petra+Drap%C5%A1ina+35,+Novi+Sad,+Serbia',
     },
     {
-      title: 'Milongas',
+      title: 'Friday & Saturday Milongas',
       name: 'SPENS — Stonoteniska dvorana',
       address: ['Sutjeska 2', 'Novi Sad'],
       description:
-        'Step onto 1,400 m² of wooden floor in a historic hall of SPENS, designed for the steps of the champions of then and now.',
+        'The SPENS complex in Novi Sad is a legendary temple of sport and culture — spanning over 85,000 m² and hosting world championships, major concerts, and prestigious competitions. At its heart is the Table Tennis Hall: SPENS stands for Stonotenisko Prvenstvo Novi Sad, built for the historic 1981 World Table Tennis Championship. Spanning 1,400 m² of wooden floor, this vast hall is the perfect canvas for world-class dancing — and on this very floor, European Tango Champions Carlos & Mirella continue the venue\'s tradition of hosting the highest level of international mastery.',
       mapsUrl: 'https://www.google.com/maps/search/?api=1&query=SPENS+Sutjeska+2+Novi+Sad+Serbia',
+      image: '/images/spens.png',
+      imageAlt: 'SPENS sports and business centre building in Novi Sad',
+    },
+    {
+      title: 'Sunday Gala Milonga',
+      name: 'RTV — Radio Televizija Vojvodine',
+      address: ['Kamenički put 45', 'Petrovaradin'],
+      description:
+        'Radio Televizija Vojvodine (RTV) is the premier public broadcaster and cultural institution of the region. From its hillside vantage point in Petrovaradin, RTV hosts high-profile international events and preserves artistic heritage. The Sunday Gala Milonga with Carlos & Mirella\'s artist show takes place in this iconic space — and the evening will be recorded by RTV to preserve this historic moment.',
+      capacityNote:
+        'Limited to 100 people — sales for the Sunday Gala Milonga close once capacity is reached.',
+      mapsUrl:
+        'https://www.google.com/maps/search/?api=1&query=RTV+Kamenicki+put+45+Petrovaradin+Serbia',
+      image: '/images/rtv.png',
+      imageAlt: 'RTV Radio Televizija Vojvodine building in Petrovaradin',
     },
   ],
 } as const;
@@ -282,6 +310,9 @@ export const pricing = {
     {
       id: 'pricing-note-door',
       text: 'After November 15th, registration will be possible at the door of the event.',
+    },
+    {
+      text: 'Sunday Gala Milonga at RTV (Petrovaradin) is limited to 100 people. Once capacity is reached, sales for that milonga close — including within packages that include it.',
     },
   ],
   periods: [
@@ -359,7 +390,11 @@ export const pricing = {
         {
           category: 'Individual Milonga',
           price: '€25',
-          items: ['Friday Welcome Milonga', 'Saturday Milonga', 'Sunday Gala Milonga and Show'],
+          items: [
+            'Friday Welcome Milonga — SPENS',
+            'Saturday Milonga — SPENS',
+            'Sunday Gala Milonga and Show — RTV (max. 100)',
+          ],
         },
         {
           category: 'Individual Workshops',
@@ -376,8 +411,8 @@ export const pricing = {
     {
       id: 'day-of',
       name: 'Day of Event',
-      dates: '16/11 - 22/11',
-      startDate: '2026-11-16',
+      dates: '20/11-22/11',
+      startDate: '2026-11-20',
       endDate: '2026-11-22',
       footnoteNoteId: 'pricing-note-door',
       packages: [
@@ -400,7 +435,11 @@ export const pricing = {
         {
           category: 'Individual Milonga',
           price: '€30',
-          items: ['Friday Welcome Milonga', 'Saturday Milonga', 'Sunday Gala Milonga and Show'],
+          items: [
+            'Friday Welcome Milonga — SPENS',
+            'Saturday Milonga — SPENS',
+            'Sunday Gala Milonga and Show — RTV (max. 100)',
+          ],
         },
         {
           category: 'Individual Workshops',

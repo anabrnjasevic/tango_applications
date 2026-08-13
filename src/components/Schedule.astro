@@ -16,6 +16,13 @@ const registration = getRegistrationState();
           <p>{line}</p>
         ))}
       </div>
+      <p
+        data-reveal="left"
+        data-reveal-delay="150"
+        class="mt-6 rounded-xl border border-white/10 bg-surface-card px-4 py-4 text-base leading-relaxed text-white/70"
+      >
+        {copy.milongaVenuesNote}
+      </p>
       <a data-reveal="left" data-reveal-delay="200" href={registration.ctaHref} class="btn-primary mt-8">
         {registration.ctaLabel}
       </a>
@@ -43,6 +50,12 @@ const registration = getRegistrationState();
               <p class="mt-1 text-lg text-brand-light">{item.subtitle}</p>
             )}
             <p class="mt-2 text-sm font-semibold uppercase tracking-wider text-white/60">{item.tag}</p>
+            {'venue' in item && item.venue && (
+              <p class="mt-2 text-sm font-medium text-brand-light">{item.venue}</p>
+            )}
+            {'venueNote' in item && item.venueNote && (
+              <p class="mt-2 text-sm font-medium text-brand">{item.venueNote}</p>
+            )}
             <div class="mt-3 space-y-2 text-white/65">
               {item.details.map((detail) => (
                 <p>{detail}</p>

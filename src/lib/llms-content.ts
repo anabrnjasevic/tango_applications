@@ -14,8 +14,10 @@ function formatSchedule() {
   return schedule
     .map((item, index) => {
       const subtitle = 'subtitle' in item && item.subtitle ? `\n${item.subtitle}` : '';
+      const venue = 'venue' in item && item.venue ? `\n   Venue: ${item.venue}` : '';
+      const venueNote = 'venueNote' in item && item.venueNote ? `\n   ${item.venueNote}` : '';
       const details = item.details.map((detail) => `  ${detail}`).join('\n');
-      return `${index + 1}. ${item.title}${subtitle}\n   ${item.time} · ${item.day} · ${item.tag}\n${details}`;
+      return `${index + 1}. ${item.title}${subtitle}\n   ${item.time} · ${item.day} · ${item.tag}${venue}${venueNote}\n${details}`;
     })
     .join('\n\n');
 }
@@ -125,10 +127,12 @@ ${venue.headline}
 ${venue.walkingNote}
 
 ${venue.locations
-  .map(
-    (location) =>
-      `${location.title}\n${location.name}\n${location.address.join(', ')}\n${location.description}`,
-  )
+  .map((location) => {
+    const email = 'email' in location && location.email ? `\n${location.email}` : '';
+    const capacity =
+      'capacityNote' in location && location.capacityNote ? `\n${location.capacityNote}` : '';
+    return `${location.title}\n${location.name}\n${location.address.join(', ')}${email}\n${location.description}${capacity}`;
+  })
   .join('\n\n')}
 
 PRICING

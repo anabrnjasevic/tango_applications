@@ -1,28 +1,28 @@
 ---
 import { venue } from '../data/site';
-
-const [workshops, milongas] = venue.locations;
 ---
 
 <section id="venue" class="section-pad bg-surface-elevated">
   <div class="mx-auto max-w-7xl">
     <div data-reveal="fade" class="mb-10">
       <h2 class="font-display text-4xl text-white md:text-6xl">{venue.headline}</h2>
-      <p class="mt-4 max-w-2xl text-lg text-white/60">{venue.walkingNote}</p>
+      <p class="mt-4 max-w-3xl text-lg text-white/60">{venue.walkingNote}</p>
     </div>
 
     <div class="grid gap-8 lg:grid-cols-3 lg:gap-10">
-      <div data-reveal="scale" class="group overflow-hidden rounded-2xl border border-white/10">
-        <img
-          src="/images/venue.png"
-          alt="Dance venue with polished wooden floor"
-          class="aspect-[4/3] h-full w-full object-cover transition duration-700 group-hover:scale-105"
-        />
-      </div>
-
       {
-        [workshops, milongas].map((location, index) => (
-          <article data-reveal data-reveal-delay={String((index + 1) * 100)} class="flex flex-col">
+        venue.locations.map((location, index) => (
+          <article data-reveal data-reveal-delay={String(index * 100)} class="flex flex-col">
+            {'image' in location && location.image ? (
+              <div class="group mb-6 overflow-hidden rounded-2xl border border-white/10">
+                <img
+                  src={location.image}
+                  alt={'imageAlt' in location ? location.imageAlt : location.name}
+                  class="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105"
+                />
+              </div>
+            ) : null}
+
             <h3 class="font-display text-3xl text-brand-light">{location.title}</h3>
             <p class="mt-2 font-display text-xl text-white">{location.name}</p>
             <p class="mt-1 text-white/70">
@@ -33,7 +33,20 @@ const [workshops, milongas] = venue.locations;
                 </>
               ))}
             </p>
+            {'email' in location && location.email ? (
+              <a
+                href={`mailto:${location.email}`}
+                class="mt-2 text-brand-light transition-colors hover:text-brand"
+              >
+                {location.email}
+              </a>
+            ) : null}
             <p class="mt-4 flex-1 text-lg leading-relaxed text-white/70">{location.description}</p>
+            {'capacityNote' in location && location.capacityNote ? (
+              <p class="mt-4 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm font-medium text-brand-light">
+                {location.capacityNote}
+              </p>
+            ) : null}
             <a
               href={location.mapsUrl}
               target="_blank"
