@@ -255,6 +255,8 @@ export const venue = {
       description:
         'Spacious studios with sprung floors and mirrors — home base for all workshops during the weekend.',
       mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Petra+Drap%C5%A1ina+35,+Novi+Sad,+Serbia',
+      image: '/images/petra-drapsina.png',
+      imageAlt: 'Camino Tango studio interior at Petra Drapšina 35 in Novi Sad',
     },
     {
       title: 'Friday & Saturday Milongas',
