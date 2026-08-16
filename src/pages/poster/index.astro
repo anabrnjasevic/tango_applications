@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { posterVariants } from '../../lib/poster-variants';
+
+export const prerender = true;
+---
+
+<BaseLayout title="Share & print posters" noindex={true}>
+  <main class="min-h-screen bg-surface px-5 py-16 md:px-10">
+    <div class="mx-auto max-w-3xl">
+      <h1 class="font-display text-4xl text-white md:text-5xl">Share &amp; print posters</h1>
+      <p class="mt-4 text-lg text-white/70">
+        Fixed-size hero layouts for social posts and print. Each link opens a canvas that matches
+        the landing page hero — photo, blue gradient, date, and titles.
+      </p>
+
+      <ul class="mt-10 space-y-4">
+        {
+          Object.entries(posterVariants).map(([key, variant]) => (
+            <li class="rounded-2xl border border-white/10 bg-surface-elevated p-6">
+              <h2 class="font-display text-2xl text-brand-light">{variant.label}</h2>
+              <p class="mt-1 text-white/60">{variant.description}</p>
+              <p class="mt-2 text-sm text-white/40">
+                {variant.width} × {variant.height} px
+              </p>
+              <a
+                href={`/poster/${key}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-primary mt-4 inline-flex"
+              >
+                Open poster
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <section class="mt-12 rounded-2xl border border-white/10 bg-surface-card p-6 md:p-8">
+        <h2 class="font-display text-2xl text-white">How to export</h2>
+        <ol class="mt-4 list-decimal space-y-3 pl-5 text-white/75">
+          <li>Open a poster link above (opens in a new tab at exact pixel size).</li>
+          <li>
+            <strong class="text-white">Screenshot:</strong> on macOS use Cmd+Shift+4, or in Chrome
+            DevTools right-click the page → Inspect → right-click <code class="text-brand-light"
+              >&lt;html&gt;</code
+            > → Capture screenshot.
+          </li>
+          <li>
+            <strong class="text-white">Print:</strong> open the A4 poster, then File → Print → Save
+            as PDF. Disable headers/footers and set margins to none.
+          </li>
+        </ol>
+      </section>
+    </div>
+  </main>
+</BaseLayout>

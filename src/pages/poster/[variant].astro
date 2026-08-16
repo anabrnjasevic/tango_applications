@@ -1,0 +1,23 @@
+---
+import PosterHero from '../../components/PosterHero.astro';
+import PosterLayout from '../../layouts/PosterLayout.astro';
+import { posterVariants } from '../../lib/poster-variants';
+import type { PosterVariant } from '../../lib/poster-variants';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return Object.keys(posterVariants).map((variant) => ({ params: { variant } }));
+}
+
+const variant = Astro.params.variant as PosterVariant;
+const config = posterVariants[variant];
+---
+
+<PosterLayout
+  title={`${config.label} — Camino Tango Weekend`}
+  width={config.width}
+  height={config.height}
+>
+  <PosterHero variant={variant} />
+</PosterLayout>

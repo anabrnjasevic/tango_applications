@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  width: number;
+  height: number;
+}
+
+const { title, width, height } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content={`width=${width}, initial-scale=1`} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+    <style define:vars={{ width: `${width}px`, height: `${height}px` }}>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: var(--width);
+        height: var(--height);
+        overflow: hidden;
+        background: #0a0a0a;
+      }
+
+      .poster-canvas {
+        width: var(--width);
+        height: var(--height);
+      }
+
+      @media print {
+        @page {
+          size: var(--width) var(--height);
+          margin: 0;
+        }
+
+        html,
+        body {
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="poster-canvas">
+      <slot />
+    </div>
+  </body>
+</html>

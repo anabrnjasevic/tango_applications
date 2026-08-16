@@ -1,0 +1,56 @@
+---
+import { site } from '../data/site';
+import type { PosterVariant } from '../lib/poster-variants';
+import { posterVariants } from '../lib/poster-variants';
+
+interface Props {
+  variant: PosterVariant;
+}
+
+const { variant } = Astro.props;
+const config = posterVariants[variant];
+---
+
+<div class="relative h-full w-full overflow-hidden">
+  <div class="absolute inset-0">
+    <img
+      src="/images/hero-dancers.png"
+      alt=""
+      class="h-full w-full object-cover object-top opacity-60"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-brand/90"></div>
+  </div>
+
+  <div
+    class:list={[
+      'relative flex h-full w-full flex-col items-center justify-center text-center',
+      config.paddingClass,
+    ]}
+  >
+    <p class:list={['mb-4 font-semibold uppercase text-brand-light', config.dateClass]}>
+      {site.dateShort} | {site.locationShort}
+    </p>
+
+    <h1 class="max-w-full">
+      <span class:list={['font-display block text-white', config.taglineClass]}>
+        {site.tagline}
+      </span>
+      <span
+        class:list={[
+          'font-display block text-white/90',
+          config.titleClass,
+          config.titleGap,
+        ]}
+      >
+        {site.title}
+      </span>
+    </h1>
+  </div>
+
+  <div
+    class:list={[
+      'absolute bottom-0 left-0 right-0 bg-gradient-to-t from-surface to-transparent',
+      config.bottomFadeClass,
+    ]}
+  ></div>
+</div>
