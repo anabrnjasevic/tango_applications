@@ -257,7 +257,6 @@ export const venue = {
       title: 'Workshops',
       name: 'Camino Tango',
       address: ['Petra Drapšina 35', 'Novi Sad'],
-      email: 'camino.serbia@gmail.com',
       description:
         'Spacious studios with sprung floors and mirrors — home base for all workshops during the weekend.',
       mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Petra+Drap%C5%A1ina+35,+Novi+Sad,+Serbia',
@@ -462,6 +461,36 @@ export const pricing = {
       ],
     },
   ],
+} as const;
+
+export const noviSad = {
+  headline: 'Novi Sad in November',
+  subheadline: 'An Autumn Cultural Invitation',
+  intro:
+    'Step into Novi Sad this November, where Europe\'s former City of Culture wears the poetic colors of late autumn. Revered for centuries as the "Serbian Athens" due to its exceptionally vibrant intellectual and cultural life, the city invites you to explore its elegant pedestrian heart. You can easily plan a rich blend of art, historic architecture, and culinary traditions during your tango weekend visit.',
+  image: '/images/novi-sad-petrovaradin.jpg',
+  imageAlt:
+    'Nighttime view of Petrovaradin Fortress in Novi Sad illuminated with golden lights reflecting on the Danube River.',
+  highlights: [
+    {
+      title: 'Art in the Afternoon Chill',
+      body: 'Seek warmth inside the grand Gallery of Matica Srpska to admire centuries of masterpieces, or explore the Svilara Cultural Station, a revitalized former silk factory pulsing with modern creative energy.',
+    },
+    {
+      title: "Vauban's Fortress Whispers",
+      body: 'Walk the misty ramparts of the massive Petrovaradin Fortress — constructed using the highly advanced military bastion system of Sébastien de Vauban — where you can book a guided tour into its mysterious underground military galleries overlooking the beautiful river.',
+    },
+    {
+      title: 'A Symphony of Cultures',
+      body: "Discover the city's rich multicultural heritage and historic landmarks. Visit the grand Saint George's Orthodox Cathedral with its magnificent gilded iconostasis, the Neo-Gothic Catholic Name of Mary Church, and the architectural marvel of the Novi Sad Synagogue, which today serves as a premier venue for prestigious classical concerts and city cultural programs.",
+    },
+    {
+      title: 'Danube Culinary Retreats',
+      body: 'Watch the water slowly flow by from a cozy riverside čarda. Savor rich local wines and hot, traditional fish soup beside the fireplace at iconic spots like Čarda Aqua Doria or Piknik on Ribarsko Ostrvo.',
+    },
+  ],
+  closing:
+    'Let the poetic autumn beauty and famous hospitality of Novi Sad frame your November tango weekend memories!',
 } as const;
 
 export const testimonials = [

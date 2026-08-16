@@ -82,11 +82,11 @@ function isoToDayNumber(isoDate: string): number {
 }
 
 function formatDisplayDate(isoDate: string): string {
-  return new Date(`${isoDate}T12:00:00`).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const date = new Date(`${isoDate}T12:00:00`);
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${month} ${day} ${year}`;
 }
 
 function formatShortDate(isoDate: string): string {
