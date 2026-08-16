@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { buildLlmsTxt } from '../lib/llms-content';
 
+export const prerender = false;
+
 export const GET: APIRoute = () => {
   return new Response(buildLlmsTxt(), {
     headers: {

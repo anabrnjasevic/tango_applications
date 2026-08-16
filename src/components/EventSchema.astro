@@ -2,8 +2,8 @@
 import { artists, event, pricing, seo, site, siteUrl } from '../data/site';
 import { getRegistrationState } from '../lib/registration-schedule';
 
-const imageUrl = new URL(seo.ogImage, siteUrl).href;
-const eventUrl = new URL('/', siteUrl).href;
+const imageUrl = new URL(seo.ogImage, `${siteUrl}/`).href;
+const eventUrl = new URL('/', `${siteUrl}/`).href;
 const registration = getRegistrationState();
 
 const offersPeriod =
@@ -13,53 +13,78 @@ const offersPeriod =
 
 const availability = registration.isRegistrationOpen
   ? 'https://schema.org/InStock'
-  : 'https://schema.org/SoldOut';
+  : registration.isAfterOnlineClose
+    ? 'https://schema.org/InStoreOnly'
+    : 'https://schema.org/PreOrder';
+
+const organizationId = `${eventUrl}#organization`;
+const websiteId = `${eventUrl}#website`;
+const eventId = `${eventUrl}#event`;
 
 const schema = {
   '@context': 'https://schema.org',
-  '@type': 'Event',
-  name: site.title,
-  description: seo.description,
-  startDate: event.startDate,
-  endDate: event.endDate,
-  eventStatus: `https://schema.org/${event.eventStatus}`,
-  eventAttendanceMode: `https://schema.org/${event.attendanceMode}`,
-  image: imageUrl,
-  url: eventUrl,
-  location: {
-    '@type': 'Place',
-    name: event.venueName,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: event.streetAddress,
-      addressLocality: event.addressLocality,
-      addressCountry: event.addressCountry,
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': organizationId,
+      name: event.organizer.name,
+      email: event.organizer.email,
+      url: eventUrl,
     },
-  },
-  organizer: {
-    '@type': 'Organization',
-    name: event.organizer.name,
-    email: event.organizer.email,
-  },
-  performer: event.performers.map((name) => ({
-    '@type': 'Person',
-    name,
-  })),
-  offers: offersPeriod.packages.map((tier) => ({
-    '@type': 'Offer',
-    name: tier.name,
-    price: tier.price.replace('€', ''),
-    priceCurrency: 'EUR',
-    availability,
-    url: `${eventUrl}#tickets`,
-    ...('startDate' in offersPeriod && 'endDate' in offersPeriod
-      ? {
-          validFrom: offersPeriod.startDate,
-          validThrough: offersPeriod.endDate,
-        }
-      : {}),
-  })),
-  about: artists.headline,
+    {
+      '@type': 'WebSite',
+      '@id': websiteId,
+      name: site.title,
+      url: eventUrl,
+      description: seo.description,
+      publisher: { '@id': organizationId },
+      inLanguage: 'en',
+    },
+    {
+      '@type': 'Event',
+      '@id': eventId,
+      name: site.title,
+      description: seo.description,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      eventStatus: `https://schema.org/${event.eventStatus}`,
+      eventAttendanceMode: `https://schema.org/${event.attendanceMode}`,
+      image: imageUrl,
+      url: eventUrl,
+      inLanguage: 'en',
+      location: {
+        '@type': 'Place',
+        name: event.venueName,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: event.streetAddress,
+          addressLocality: event.addressLocality,
+          addressCountry: event.addressCountry,
+        },
+      },
+      organizer: { '@id': organizationId },
+      performer: event.performers.map((name) => ({
+        '@type': 'Person',
+        name,
+        url: artists.websiteUrl,
+      })),
+      offers: offersPeriod.packages.map((tier) => ({
+        '@type': 'Offer',
+        name: tier.name,
+        price: tier.price.replace('€', ''),
+        priceCurrency: 'EUR',
+        availability,
+        url: `${eventUrl}#tickets`,
+        ...('startDate' in offersPeriod && 'endDate' in offersPeriod
+          ? {
+              validFrom: offersPeriod.startDate,
+              validThrough: offersPeriod.endDate,
+            }
+          : {}),
+      })),
+      about: artists.headline,
+    },
+  ],
 };
 ---
 

@@ -1,4 +1,6 @@
-export const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321').replace(/\/$/, '');
+import { resolveSiteUrl } from '../lib/site-url';
+
+export const siteUrl = resolveSiteUrl();
 
 export const site = {
   title: 'Camino Tango Weekend',
@@ -18,16 +20,20 @@ export const site = {
 
 export const seo = {
   description:
-    'A weekend of workshops, milongas, and performances with Carlos & Mirella Santos David in Novi Sad, Serbia.',
+    'Camino Tango Weekend with Carlos & Mirella Santos David — November 20–22, 2026 in Novi Sad, Serbia. Workshops, milongas, and a Sunday gala show.',
   ogImage: '/images/hero-dancers.png',
+  ogImageAlt: 'Carlos and Mirella dancing tango at Camino Tango Weekend in Novi Sad',
+  ogImageWidth: 1024,
+  ogImageHeight: 844,
   twitterHandle: '',
-  locale: 'en',
+  locale: 'en_US',
   themeColor: '#00acc1',
+  googleSiteVerification: (import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION || '').trim(),
 } as const;
 
 export const event = {
-  startDate: '2026-11-20',
-  endDate: '2026-11-22',
+  startDate: '2026-11-20T20:00:00+01:00',
+  endDate: '2026-11-23T00:00:00+01:00',
   eventStatus: 'EventScheduled',
   attendanceMode: 'OfflineEventAttendanceMode',
   venueName: 'Camino Tango School',

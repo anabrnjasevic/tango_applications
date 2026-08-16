@@ -20,13 +20,14 @@ const registration = getRegistrationState();
       {site.dateShort} | {site.locationShort}
     </p>
 
-    <h1 class="hero-enter hero-enter-delay-1 font-display max-w-5xl text-4xl leading-none text-white sm:text-6xl md:text-7xl lg:text-8xl">
-      {site.tagline}
+    <h1>
+      <span class="hero-enter hero-enter-delay-1 font-display block max-w-5xl text-4xl leading-none text-white sm:text-6xl md:text-7xl lg:text-8xl">
+        {site.tagline}
+      </span>
+      <span class="hero-enter hero-enter-delay-2 mt-6 block font-display text-2xl tracking-widest text-white/90 sm:text-3xl md:text-4xl">
+        {site.title}
+      </span>
     </h1>
-
-    <p class="hero-enter hero-enter-delay-2 mt-6 font-display text-2xl tracking-widest text-white/90 sm:text-3xl md:text-4xl">
-      {site.title}
-    </p>
 
     <div class="hero-enter hero-enter-delay-3 mt-10 flex flex-wrap items-center justify-center gap-4">
       <a href="#artists" class="btn-outline">
