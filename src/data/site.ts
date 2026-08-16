@@ -91,6 +91,7 @@ export const navLinks = [
   { label: 'Schedule', href: '#schedule' },
   { label: 'Prices', href: '#tickets' },
   { label: 'Registration', href: '#register' },
+  { label: 'Novi Sad', href: '#novi-sad' },
   { label: 'Contact', href: '#contact' },
 ] as const;
 
