@@ -270,7 +270,7 @@ export const venue = {
       name: 'SPENS — Stonoteniska dvorana',
       address: ['Sutjeska 2', 'Novi Sad'],
       description:
-        'The SPENS complex in Novi Sad is a legendary temple of sport and culture — spanning over 85,000 m² and hosting world championships, major concerts, and prestigious competitions. At its heart is the Table Tennis Hall: SPENS stands for Stonotenisko Prvenstvo Novi Sad, built for the historic 1981 World Table Tennis Championship. Spanning 1,400 m² of wooden floor, this vast hall is the perfect canvas for world-class dancing — and on this very floor, European Tango Champions Carlos & Mirella continue the venue\'s tradition of hosting the highest level of international mastery.',
+        'The SPENS complex in Novi Sad is a legendary temple of sport and culture — spanning over 85,000 m² and hosting world championships, major concerts, and prestigious competitions. At its heart is the Table Tennis Hall: SPENS stands for Stonotenisko Prvenstvo Novi Sad, built for the historic 1981 World Table Tennis Championship. Spanning 900 m² of wooden floor, this vast hall is the perfect canvas for world-class dancing — and on this very floor, European Tango Champions Carlos & Mirella continue the venue\'s tradition of hosting the highest level of international mastery.',
       mapsUrl: 'https://www.google.com/maps/search/?api=1&query=SPENS+Sutjeska+2+Novi+Sad+Serbia',
       image: '/images/spens.png',
       imageAlt: 'SPENS sports and business centre building in Novi Sad',
