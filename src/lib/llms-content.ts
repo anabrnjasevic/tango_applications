@@ -11,13 +11,28 @@ import {
 } from '../data/site';
 
 function formatSchedule() {
-  return schedule
-    .map((item, index) => {
-      const subtitle = 'subtitle' in item && item.subtitle ? `\n${item.subtitle}` : '';
-      const venue = 'venue' in item && item.venue ? `\n   Venue: ${item.venue}` : '';
-      const venueNote = 'venueNote' in item && item.venueNote ? `\n   ${item.venueNote}` : '';
-      const details = item.details.map((detail) => `  ${detail}`).join('\n');
-      return `${index + 1}. ${item.title}${subtitle}\n   ${item.time} · ${item.day} · ${item.tag}${venue}${venueNote}\n${details}`;
+  const days: { day: string; items: typeof schedule[number][] }[] = [];
+  for (const item of schedule) {
+    const last = days[days.length - 1];
+    if (!last || last.day !== item.day) {
+      days.push({ day: item.day, items: [item] });
+    } else {
+      last.items.push(item);
+    }
+  }
+
+  return days
+    .map((group) => {
+      const events = group.items
+        .map((item) => {
+          const subtitle = 'subtitle' in item && item.subtitle ? `\n${item.subtitle}` : '';
+          const venue = 'venue' in item && item.venue ? `\n   Venue: ${item.venue}` : '';
+          const venueNote = 'venueNote' in item && item.venueNote ? `\n   ${item.venueNote}` : '';
+          const details = item.details.map((detail) => `  ${detail}`).join('\n');
+          return `${item.time}\n${item.title}${subtitle}\n   ${item.tag}${venue}${venueNote}\n${details}`;
+        })
+        .join('\n\n');
+      return `${group.day}\n${events}`;
     })
     .join('\n\n');
 }
@@ -70,8 +85,6 @@ ${artists.headline}
 
 ${artists.body}
 
-Gala: ${artists.gala}
-
 ## Schedule
 ${formatSchedule()}
 
@@ -110,8 +123,6 @@ ARTISTS
 ${artists.headline}
 
 ${artists.body}
-
-${artists.gala}
 
 DJs
 ===

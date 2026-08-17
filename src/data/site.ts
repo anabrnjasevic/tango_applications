@@ -48,9 +48,10 @@ export const event = {
 } as const;
 
 export const copy = {
-  heroCtaWatchVideo: 'Watch video',
+  heroCtaWatchVideo: 'Maestros',
   heroCtaProgram: 'Program',
   heroCtaRegister: 'Register',
+  comparePricesBelow: 'Compare prices below',
   saveTheDate: "Don't miss the early bird prices — secure your pass before they end.",
   scheduleIntroLines: [
     'Whether you want to solidify your basics,',
@@ -313,11 +314,11 @@ export const pricing = {
       text: 'During regular registration and on the day of the event, you can buy packages or individual workshops, masterclasses, or milongas.',
     },
     {
-      text: 'Masterclasses are not part of the Full Pass. Priority is given to dance instructors, performers, and experienced dancers. Due to limited capacity, the organizers reserve the right to accept or reject masterclass applications. You will be notified via email.',
+      text: 'Escenario Masterclasses are not part of the Full Pass. Priority is given to dance instructors, performers, and experienced dancers. Due to limited capacity, the organizers reserve the right to accept or reject masterclass applications. You will be notified via email.',
     },
     {
       id: 'pricing-note-door',
-      text: 'After November 15th, registration will be possible at the door of the event.',
+      text: 'After November 15th, the registration will only be possible at the door of the event.',
     },
     {
       text: 'Sunday Gala Milonga at RTV (Petrovaradin) is limited to 100 people. Once capacity is reached, sales for that milonga close — including within packages that include it.',
@@ -334,7 +335,7 @@ export const pricing = {
         { name: 'Milonga Pass', description: '3 milongas', price: '€50', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€70', featured: false },
         {
-          name: 'Masterclass Pass',
+          name: 'Escenario Pass',
           description: '2 masterclasses (not part of Full Pass)',
           price: '€40',
           featured: false,
@@ -358,7 +359,7 @@ export const pricing = {
         { name: 'Milonga Pass', description: '3 milongas', price: '€60', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€80', featured: false },
         {
-          name: 'Masterclass Pass',
+          name: 'Escenario Pass',
           description: '2 masterclasses (not part of Full Pass)',
           price: '€50',
           featured: false,
@@ -382,7 +383,7 @@ export const pricing = {
         { name: 'Milonga Pass', description: '3 milongas', price: '€70', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€90', featured: false },
         {
-          name: 'Masterclass Pass',
+          name: 'Escenario Pass',
           description: '2 masterclasses (not part of Full Pass)',
           price: '€55',
           featured: false,
@@ -427,7 +428,7 @@ export const pricing = {
         { name: 'Milonga Pass', description: '3 milongas', price: '€80', featured: false },
         { name: 'Workshop Pass', description: '4 workshops', price: '€110', featured: false },
         {
-          name: 'Masterclass Pass',
+          name: 'Escenario Pass',
           description: '2 masterclasses (not part of Full Pass)',
           price: '€65',
           featured: false,
@@ -475,7 +476,7 @@ export const noviSad = {
   highlights: [
     {
       title: 'Art in the Afternoon Chill',
-      body: 'Seek warmth inside the grand Gallery of Matica Srpska to admire centuries of masterpieces, or explore the Svilara Cultural Station, a revitalized former silk factory pulsing with modern creative energy.',
+      body: 'Seek warmth inside the grand Gallery of Matica Srpska to admire centuries of masterpieces, dive into regional history at the Museum of Vojvodina to discover its priceless golden Roman helmets, or cross the river to the City Museum of Novi Sad on the fortress to explore its brilliant, immersive "Mileva" multimedia exhibition.',
     },
     {
       title: "Vauban's Fortress Whispers",

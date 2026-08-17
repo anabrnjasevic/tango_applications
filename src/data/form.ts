@@ -52,7 +52,7 @@ export const packageOptions = [
   { value: 'Workshop Pass: 4 Workshops', label: 'Workshop Pass: 4 Workshops', group: 'package' as const },
   {
     value: 'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
-    label: 'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
+    label: 'Escenario Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
     group: 'package' as const,
   },
   { value: 'Individual Milonga: Friday Welcome Milonga', label: 'Friday Welcome Milonga — SPENS', group: 'individual' as const, category: 'Individual Milonga' },

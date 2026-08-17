@@ -10,7 +10,7 @@ const PACKAGE_FORM_VALUES: Record<string, string> = {
   'Full Pass': 'Full Pass: 4 Workshops & 3 Milongas',
   'Milonga Pass': 'Milonga Pass: 3 Milongas',
   'Workshop Pass': 'Workshop Pass: 4 Workshops',
-  'Masterclass Pass':
+  'Escenario Pass':
     'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
 };
 
@@ -166,7 +166,7 @@ function buildRegistrationMessage(
   activePeriod: (typeof pricing.periods)[number] | undefined,
 ): string {
   if (isBeforeOpen) {
-    return `Registration opens ${formatDisplayDate(registrationOpensOn)} — compare prices below.`;
+    return `Registration opens ${formatDisplayDate(registrationOpensOn)}.`;
   }
   if (isAfterOnlineClose) {
     return copy.registrationClosedOnline;

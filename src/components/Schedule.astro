@@ -1,8 +1,21 @@
 ---
-import { copy, schedule, site } from '../data/site';
+import { copy, schedule } from '../data/site';
 import { getRegistrationState } from '../lib/registration-schedule';
 
 const registration = getRegistrationState();
+
+const scheduleByDay = schedule.reduce<{ day: string; items: typeof schedule[number][] }[]>(
+  (groups, item) => {
+    const last = groups[groups.length - 1];
+    if (!last || last.day !== item.day) {
+      groups.push({ day: item.day, items: [item] });
+    } else {
+      last.items.push(item);
+    }
+    return groups;
+  },
+  [],
+);
 ---
 
 <section id="schedule" class="section-pad bg-surface-elevated">
@@ -28,44 +41,37 @@ const registration = getRegistrationState();
       </a>
     </div>
 
-    <ol class="space-y-8">
-      {schedule.map((item, index) => (
-        <li
-          data-reveal
-          data-reveal-delay={String(index * 80)}
-          class="flex gap-5"
-        >
-          <div class="flex flex-col items-center">
-            <span class="font-display text-xl text-white">{index + 1}</span>
-            <div class="timeline-dot"></div>
-            {index < schedule.length - 1 && (
-              <div class="mt-2 w-px flex-1 bg-white/15"></div>
-            )}
-          </div>
-          <div class="pb-2">
-            <p class="text-sm font-semibold uppercase tracking-wider text-brand">{item.time}</p>
-            <p class="mt-1 text-sm uppercase tracking-wider text-white/50">{item.day}</p>
-            <h3 class="mt-2 font-display text-2xl text-white">{item.title}</h3>
-            {'subtitle' in item && item.subtitle && (
-              <p class="mt-1 text-lg text-brand-light">{item.subtitle}</p>
-            )}
-            {'venue' in item && item.venue && (
-              <p class="mt-2 text-sm font-medium text-brand-light">{item.venue}</p>
-            )}
-            {'venueNote' in item && item.venueNote && (
-              <p class="mt-2 text-sm font-medium text-brand">{item.venueNote}</p>
-            )}
-            <div class="mt-3">
-              <p class="text-sm font-semibold uppercase tracking-wider text-white/60">{item.tag}</p>
-              <div class="mt-2 space-y-2 text-white/65">
-                {item.details.map((detail) => (
-                  <p>{detail}</p>
-                ))}
-              </div>
-            </div>
-          </div>
-        </li>
+    <div class="space-y-14">
+      {scheduleByDay.map((group, groupIndex) => (
+        <section data-reveal data-reveal-delay={String(groupIndex * 80)}>
+          <h3 class="font-display text-3xl text-brand-light md:text-4xl">{group.day}</h3>
+          <ol class="mt-6 space-y-8">
+            {group.items.map((item) => (
+              <li class="border-l border-white/15 pl-5">
+                <p class="text-sm font-semibold uppercase tracking-wider text-brand">{item.time}</p>
+                <h4 class="mt-2 font-display text-2xl text-white">{item.title}</h4>
+                {'subtitle' in item && item.subtitle && (
+                  <p class="mt-1 text-lg text-brand-light">{item.subtitle}</p>
+                )}
+                {'venue' in item && item.venue && (
+                  <p class="mt-2 text-sm font-medium text-brand-light">{item.venue}</p>
+                )}
+                {'venueNote' in item && item.venueNote && (
+                  <p class="mt-2 text-sm font-medium text-brand">{item.venueNote}</p>
+                )}
+                <div class="mt-3">
+                  <p class="text-sm font-semibold uppercase tracking-wider text-white/60">{item.tag}</p>
+                  <div class="mt-2 space-y-2 text-white/65">
+                    {item.details.map((detail) => (
+                      <p>{detail}</p>
+                    ))}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
       ))}
-    </ol>
+    </div>
   </div>
 </section>
