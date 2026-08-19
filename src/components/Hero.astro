@@ -16,8 +16,10 @@ const registration = getRegistrationState();
   </div>
 
   <div class="relative mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl flex-col items-center justify-center px-5 pb-24 pt-16 text-center md:px-10">
-    <p class="hero-enter mb-4 text-sm font-semibold uppercase tracking-[0.35em] text-brand-light">
-      {site.dateShort} | {site.locationShort}
+    <p class="hero-enter mb-4 flex flex-col gap-1 text-sm font-semibold uppercase tracking-[0.35em] text-brand-light md:flex-row md:justify-center md:gap-0">
+      <span>{site.dateShort}</span>
+      <span class="hidden md:inline"> | </span>
+      <span>{site.locationShort}</span>
     </p>
 
     <h1>
