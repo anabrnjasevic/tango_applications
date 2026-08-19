@@ -10,7 +10,7 @@ export const site = {
   city: 'Novi Sad',
   country: 'Serbia',
   location: 'Novi Sad, Serbia',
-  locationShort: 'Novi Sad, RS',
+  locationShort: 'Novi Sad, Serbia',
   registerUrl: '#register',
   contactEmail: 'camino.serbia@gmail.com',
   contactPhone: '+381691372707',
