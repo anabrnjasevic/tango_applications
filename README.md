@@ -27,7 +27,7 @@ src/data/site.ts
 
 Replace `registerUrl` in `src/data/site.ts` if you move the registration section.
 
-Registration uses a native on-site form validated server-side, then submitted to the same Google Form backend. Field mapping: `src/data/form.ts`. Security: `src/lib/form-security.ts`.
+Registration uses a native on-site form, validated on the server, then posted to the Google Form/Sheet. Field mapping: `src/data/form.ts`. Security: `src/lib/form-security.ts`.
 
 ### Registration security (production)
 
@@ -38,7 +38,7 @@ PUBLIC_TURNSTILE_SITE_KEY=your_site_key
 TURNSTILE_SECRET_KEY=your_secret_key
 ```
 
-Add the same variables in Vercel project settings. Local dev uses Cloudflare test keys automatically if unset.
+Add the same variables in Vercel project settings. Local `astro dev` skips Turnstile. Staging also skips Turnstile until both keys are set.
 
 ## Deploy to Vercel
 

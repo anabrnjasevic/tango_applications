@@ -1,6 +1,7 @@
 import {
   dancingYearsOptions,
   individualTicketChoices,
+  isMainPackageValue,
   packageOptions,
   roleOptions,
   validPackageValues,
@@ -28,6 +29,14 @@ export type RegistrationRequest = RegistrationPayload & {
   /** Honeypot — must stay empty */
   website?: string;
 };
+
+/** Skip Turnstile in local `astro dev`, or on a host that has no keys yet (staging before Turnstile). */
+export function skipTurnstile(): boolean {
+  if (import.meta.env.DEV === true) return true;
+  const siteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
+  const secret = String(import.meta.env.TURNSTILE_SECRET_KEY ?? '').trim();
+  return !siteKey || !secret;
+}
 
 type ValidationResult =
   | { ok: true; data: RegistrationPayload; honeypot: boolean }
@@ -59,7 +68,10 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
   const body = input as Record<string, unknown>;
   const honeypot = typeof body.website === 'string' && body.website.trim().length > 0;
 
-  if (typeof body.turnstileToken !== 'string' || !body.turnstileToken.trim()) {
+  if (
+    !skipTurnstile() &&
+    (typeof body.turnstileToken !== 'string' || !body.turnstileToken.trim())
+  ) {
     return { ok: false, error: 'Please complete the security check.' };
   }
 
@@ -88,13 +100,19 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
     return { ok: false, error: 'Please choose how you apply.' };
   }
   if (!Array.isArray(body.packages) || body.packages.length === 0) {
-    return { ok: false, error: 'Please choose at least one package.' };
+    return { ok: false, error: 'Please choose a package or at least one add-on.' };
   }
   if (body.packages.length > fieldLimits.maxPackages) {
     return { ok: false, error: 'Too many packages selected.' };
   }
   if (!body.packages.every((pkg) => typeof pkg === 'string' && validPackageValues.includes(pkg))) {
     return { ok: false, error: 'Invalid package selection.' };
+  }
+
+  const uniquePackages = [...new Set(body.packages as string[])];
+  const mainPackages = uniquePackages.filter(isMainPackageValue);
+  if (mainPackages.length > 1) {
+    return { ok: false, error: 'Please choose only one package.' };
   }
 
   const registration = getRegistrationState();
@@ -108,16 +126,14 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
   }
 
   const allowedPackages = new Set(registration.allowedPackageValues);
-  if (!body.packages.every((pkg) => typeof pkg === 'string' && allowedPackages.has(pkg))) {
+  if (!uniquePackages.every((pkg) => allowedPackages.has(pkg))) {
     return { ok: false, error: 'That package is not available in the current registration period.' };
   }
 
   const individualValues = new Set(individualTicketChoices.map((option) => option.value));
-  const hasIndividualSelection = body.packages.some(
-    (pkg) => typeof pkg === 'string' && individualValues.has(pkg),
-  );
+  const hasIndividualSelection = uniquePackages.some((pkg) => individualValues.has(pkg));
   if (hasIndividualSelection && !isIndividualTicketsAvailable()) {
-    return { ok: false, error: 'Individual tickets are not available yet.' };
+    return { ok: false, error: 'Individual tickets are only available from 8 September (Regular registration).' };
   }
   if (body.partnerName !== undefined && typeof body.partnerName !== 'string') {
     return { ok: false, error: 'Invalid partner name.' };
@@ -137,9 +153,6 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
   if (registration.activePeriodName) {
     noteParts.push(`Pricing tier: ${registration.activePeriodName}`);
   }
-  if (partnerName) {
-    noteParts.push(`Couple partner: ${partnerName}`);
-  }
   if (typeof body.notes === 'string' && body.notes.trim()) {
     noteParts.push(sanitizeSheetText(body.notes).slice(0, fieldLimits.notes));
   }
@@ -153,7 +166,8 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
     performed: body.performed as (typeof yesNoOptions)[number],
     instructor: body.instructor as (typeof yesNoOptions)[number],
     role: body.role,
-    packages: body.packages as string[],
+    packages: uniquePackages,
+    ...(partnerName ? { partnerName } : {}),
     ...(noteParts.length ? { notes: noteParts.join('\n\n') } : {}),
   };
 
@@ -165,9 +179,9 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
 }
 
 export async function verifyTurnstile(token: string, remoteIp: string): Promise<boolean> {
-  const secret =
-    import.meta.env.TURNSTILE_SECRET_KEY ??
-    (import.meta.env.DEV ? '1x0000000000000000000000000000000AA' : '');
+  if (skipTurnstile()) return true;
+
+  const secret = String(import.meta.env.TURNSTILE_SECRET_KEY ?? '').trim();
 
   if (!secret) {
     console.error('[turnstile] TURNSTILE_SECRET_KEY is not configured.');
@@ -175,17 +189,24 @@ export async function verifyTurnstile(token: string, remoteIp: string): Promise<
   }
 
   try {
+    const body = new URLSearchParams({
+      secret,
+      response: token,
+    });
+    if (remoteIp && remoteIp !== 'unknown') {
+      body.set('remoteip', remoteIp);
+    }
+
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        secret,
-        response: token,
-        remoteip: remoteIp !== 'unknown' ? remoteIp : undefined,
-      }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
     });
 
-    const result = (await response.json()) as { success?: boolean };
+    const result = (await response.json()) as { success?: boolean; 'error-codes'?: string[] };
+    if (!result.success) {
+      console.error('[turnstile] siteverify failed', result['error-codes'] ?? result);
+    }
     return Boolean(result.success);
   } catch (error) {
     console.error('[turnstile] Verification failed', error);

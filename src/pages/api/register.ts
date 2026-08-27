@@ -1,6 +1,10 @@
 import type { APIRoute } from 'astro';
-import { fetchGoogleFormContext } from '../../data/form';
-import { validateAndSanitizeRegistration, verifyTurnstile } from '../../lib/form-security';
+import { submitRegistrationToGoogle } from '../../data/form';
+import {
+  skipTurnstile,
+  validateAndSanitizeRegistration,
+  verifyTurnstile,
+} from '../../lib/form-security';
 import { getClientIp, rateLimit } from '../../lib/rate-limit';
 
 export const prerender = false;
@@ -33,25 +37,28 @@ export const POST: APIRoute = async ({ request }) => {
     return Response.json({ ok: true, submit: false });
   }
 
-  const turnstileToken =
-    body && typeof body === 'object' && 'turnstileToken' in body
-      ? String((body as Record<string, unknown>).turnstileToken)
-      : '';
+  if (!skipTurnstile()) {
+    const turnstileToken =
+      body && typeof body === 'object' && 'turnstileToken' in body
+        ? String((body as Record<string, unknown>).turnstileToken)
+        : '';
 
-  const captchaOk = await verifyTurnstile(turnstileToken, ip);
-  if (!captchaOk) {
-    return Response.json(
-      { ok: false, error: 'Security check failed. Please refresh and try again.' },
-      { status: 403 },
-    );
+    const captchaOk = await verifyTurnstile(turnstileToken, ip);
+    if (!captchaOk) {
+      return Response.json(
+        { ok: false, error: 'Security check failed. Please refresh and try again.' },
+        { status: 403 },
+      );
+    }
   }
 
-  const context = await fetchGoogleFormContext();
+  const googleResult = await submitRegistrationToGoogle(validation.data);
+  if (!googleResult.ok) {
+    return Response.json({ ok: false, error: googleResult.error }, { status: 502 });
+  }
 
   return Response.json({
     ok: true,
-    submit: true,
-    submission: validation.data,
-    fbzx: context.fbzx,
+    message: 'Your response has been recorded. A copy of your responses will be emailed to you.',
   });
 };

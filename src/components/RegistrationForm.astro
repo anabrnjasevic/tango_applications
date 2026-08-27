@@ -1,24 +1,27 @@
 ---
 import {
   dancingYearsOptions,
-  formEntries,
   googleForm,
   individualTicketGroups,
   roleOptions,
   yesNoOptions,
 } from '../data/form';
-import { fieldLimits } from '../lib/form-security';
+import { fieldLimits, skipTurnstile } from '../lib/form-security';
 import { getRegistrationState } from '../lib/registration-schedule';
 import { showDisabledIndividualTickets } from '../data/site';
 
 const registration = getRegistrationState();
+const turnstileOff = skipTurnstile();
 
-const turnstileSiteKey =
-  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ??
-  (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
+const turnstileSiteKey = turnstileOff
+  ? ''
+  : String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
 
 const showIndividualTickets =
   registration.individualTicketsAvailable || showDisabledIndividualTickets;
+
+const turnstileRequired = !turnstileOff && Boolean(turnstileSiteKey);
+const canSubmit = turnstileOff || turnstileRequired;
 ---
 
 {
@@ -118,49 +121,74 @@ const showIndividualTickets =
         </label>
       </fieldset>
 
-      <fieldset class="space-y-3">
-        <legend class="field-label mb-1 block">Choose your package: *</legend>
+      <fieldset id="package-fieldset" class="space-y-3">
+        <legend class="field-label mb-1 block">Choose your package</legend>
+        <p class="field-hint">
+          Pick one. Skip this if you only want add-ons
+          {
+            registration.individualTicketsAvailable
+              ? ' (Escenario and/or individual tickets).'
+              : ` (Escenario now, or individual tickets from ${registration.individualTicketsAvailableFromLabel}).`
+          }
+        </p>
         {
           registration.formPackages.map((option) => (
             <label class="choice">
-              <input type="checkbox" name="packages" value={option.value} class="choice-input" />
+              <input type="radio" name="package" value={option.value} class="choice-input" />
               <span>{option.label}</span>
             </label>
           ))
         }
+        <p id="package-error" class="field-error hidden"></p>
       </fieldset>
 
-      {
-        showIndividualTickets && (
-          <fieldset class="space-y-3">
-            <legend class="field-label mb-1 block">Individual tickets</legend>
-            {!registration.individualTicketsAvailable && (
-              <p class="text-sm text-white/50">
-                Available from {registration.individualTicketsAvailableFromLabel} (Regular registration).
-              </p>
-            )}
-            {
-              individualTicketGroups.map((group) => (
-                <div class="space-y-2">
-                  <p class="text-sm font-semibold uppercase tracking-wider text-brand">{group.category}</p>
-                  {group.choices.map((option) => (
-                    <label class:list={['choice', !registration.individualTicketsAvailable && 'opacity-50']}>
-                      <input
-                        type="checkbox"
-                        name="packages"
-                        value={option.value}
-                        class="choice-input"
-                        disabled={!registration.individualTicketsAvailable}
-                      />
-                      <span>{option.label}</span>
-                    </label>
-                  ))}
-                </div>
-              ))
-            }
-          </fieldset>
-        )
-      }
+      <fieldset class="space-y-3">
+        <legend class="field-label mb-1 block">Add-ons</legend>
+        {
+          registration.formEscenario && (
+            <label class="choice">
+              <input
+                type="checkbox"
+                name="addons"
+                value={registration.formEscenario.value}
+                class="choice-input"
+              />
+              <span>{registration.formEscenario.label}</span>
+            </label>
+          )
+        }
+        {
+          showIndividualTickets && (
+            <div class="space-y-3">
+              <p class="text-sm font-semibold uppercase tracking-wider text-brand">Individual tickets</p>
+              {!registration.individualTicketsAvailable && (
+                <p class="field-hint">
+                  Individual tickets only — available from {registration.individualTicketsAvailableFromLabel} (Regular registration).
+                </p>
+              )}
+              {
+                individualTicketGroups.map((group) => (
+                  <div class="space-y-2">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-brand">{group.category}</p>
+                    {group.choices.map((option) => (
+                      <label class:list={['choice', !registration.individualTicketsAvailable && 'opacity-50']}>
+                        <input
+                          type="checkbox"
+                          name="addons"
+                          value={option.value}
+                          class="choice-input"
+                          disabled={!registration.individualTicketsAvailable}
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                ))
+              }
+            </div>
+          )
+        }
+      </fieldset>
 
       <label class="field">
         <span class="field-label">Anything you want to share?</span>
@@ -173,7 +201,7 @@ const showIndividualTickets =
       </label>
 
       {
-        turnstileSiteKey ? (
+        turnstileOff ? null : turnstileRequired ? (
           <div
             id="turnstile-widget"
             class="cf-turnstile"
@@ -190,7 +218,7 @@ const showIndividualTickets =
       <button
         type="submit"
         class="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
-        disabled={!turnstileSiteKey}
+        disabled={!canSubmit}
       >
         Submit application
       </button>
@@ -198,30 +226,26 @@ const showIndividualTickets =
   )
 }
 
-<iframe
-  id="google-form-target"
-  name="google-form-target"
-  title="Form submission target"
-  class="pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0"
-></iframe>
-
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+{
+  !turnstileOff && (
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  )
+}
 
 <script
   define:vars={{
-    submitUrl: googleForm.submitUrl,
     successMessage: googleForm.successMessage,
-    entries: formEntries,
     coupleOptionValue: roleOptions.find((option) => option.needsPartner)?.value ?? '',
-    turnstileEnabled: Boolean(turnstileSiteKey),
+    turnstileRequired,
     registrationOpen: registration.isRegistrationOpen,
+    individualsAvailable: registration.individualTicketsAvailable,
   }}
 >
   const form = document.getElementById('registration-form');
   const message = document.getElementById('form-message');
   const partnerField = document.getElementById('partner-field');
   const partnerInput = form?.querySelector('input[name="partnerName"]');
-  const targetFrame = document.getElementById('google-form-target');
+  const packageError = document.getElementById('package-error');
 
   function setMessage(text, type) {
     if (!message) return;
@@ -242,6 +266,12 @@ const showIndividualTickets =
     }
   }
 
+  function setPackageError(text) {
+    if (!packageError) return;
+    packageError.textContent = text ?? '';
+    packageError.classList.toggle('hidden', !text);
+  }
+
   function updatePartnerField() {
     const selected = form?.querySelector('input[name="role"]:checked');
     const showPartner = selected?.value === coupleOptionValue;
@@ -256,82 +286,45 @@ const showIndividualTickets =
     input.addEventListener('change', updatePartnerField);
   });
 
-  function addHiddenField(formEl, name, value) {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value;
-    formEl.appendChild(input);
-  }
-
-  function buildNotes(partnerName, notes) {
-    const parts = [];
-    if (partnerName.trim()) parts.push(`Couple partner: ${partnerName.trim()}`);
-    if (notes.trim()) parts.push(notes.trim());
-    return parts.join('\n\n');
-  }
-
-  function submitToGoogleForm(payload, fbzx) {
-    return new Promise((resolve, reject) => {
-      const bridge = document.createElement('form');
-      bridge.method = 'POST';
-      bridge.action = submitUrl;
-      bridge.target = 'google-form-target';
-      bridge.style.display = 'none';
-
-      addHiddenField(bridge, entries.name, payload.name);
-      addHiddenField(bridge, entries.email, payload.email);
-      addHiddenField(bridge, entries.phone, payload.phone);
-      addHiddenField(bridge, entries.location, payload.location);
-      addHiddenField(bridge, entries.dancingYears, payload.dancingYears);
-      addHiddenField(bridge, entries.performed, payload.performed);
-      addHiddenField(bridge, entries.instructor, payload.instructor);
-      addHiddenField(bridge, entries.role, payload.role);
-      addHiddenField(bridge, 'emailAddress', payload.email);
-      addHiddenField(bridge, 'emailReceipt', 'true');
-      addHiddenField(bridge, 'fvv', '1');
-      addHiddenField(bridge, 'pageHistory', '0');
-      if (fbzx) addHiddenField(bridge, 'fbzx', fbzx);
-
-      for (const pkg of payload.packages) {
-        addHiddenField(bridge, entries.packages, pkg);
-      }
-
-      const notes = buildNotes(payload.partnerName, payload.notes);
-      if (notes) addHiddenField(bridge, entries.notes, notes);
-
-      let settled = false;
-      const finish = (ok) => {
-        if (settled) return;
-        settled = true;
-        bridge.remove();
-        ok ? resolve(true) : reject(new Error('Submission failed'));
-      };
-
-      targetFrame?.addEventListener('load', () => finish(true), { once: true });
-      setTimeout(() => finish(true), 4000);
-
-      document.body.appendChild(bridge);
-      bridge.submit();
-    });
+  function selectedProducts() {
+    const main = form?.querySelector('input[name="package"]:checked');
+    const addons = Array.from(form?.querySelectorAll('input[name="addons"]:checked') ?? []).map(
+      (input) => input.value,
+    );
+    return {
+      main: main ? main.value : '',
+      addons,
+      packages: [...(main ? [main.value] : []), ...addons],
+    };
   }
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
-    if (!form || !turnstileEnabled || !registrationOpen) return;
+    if (!form || !registrationOpen) return;
 
-    const packages = Array.from(form.querySelectorAll('input[name="packages"]:checked')).map(
-      (input) => input.value,
-    );
+    setPackageError('');
 
-    if (!packages.length) {
-      setMessage('Please choose at least one package.', 'error');
+    if (!form.reportValidity()) {
+      setMessage('Please fill in all required fields.', 'error');
       return;
     }
 
-    const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value ?? '';
+    const { packages } = selectedProducts();
 
-    if (!turnstileToken) {
+    if (!packages.length) {
+      const errorText = individualsAvailable
+        ? 'Please choose a package or at least one add-on.'
+        : 'Please choose a package or Escenario. Individual tickets open on 8 September.';
+      setPackageError(errorText);
+      setMessage(errorText, 'error');
+      return;
+    }
+
+    const turnstileToken = turnstileRequired
+      ? (document.querySelector('[name="cf-turnstile-response"]')?.value ?? '')
+      : 'dev-skip';
+
+    if (turnstileRequired && !turnstileToken) {
       setMessage('Please complete the security check.', 'error');
       return;
     }
@@ -377,19 +370,13 @@ const showIndividualTickets =
         return;
       }
 
-      if (registerResult.submit && registerResult.submission) {
-        await submitToGoogleForm(registerResult.submission, registerResult.fbzx ?? null);
-      }
-
       form.reset();
       updatePartnerField();
+      setPackageError('');
       window.turnstile?.reset?.();
-      setMessage(successMessage, 'success');
+      setMessage(registerResult.message ?? successMessage, 'success');
     } catch {
-      setMessage(
-        'Could not submit the form. Try the embedded Google Form below, or refresh and try again.',
-        'error',
-      );
+      setMessage('Could not submit the form. Please refresh and try again.', 'error');
       window.turnstile?.reset?.();
     } finally {
       if (submitButton) submitButton.disabled = false;

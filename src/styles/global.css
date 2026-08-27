@@ -200,6 +200,14 @@ body {
   @apply mb-2 block text-sm font-medium uppercase tracking-wider text-white/70;
 }
 
+.field-hint {
+  @apply mb-2 text-sm text-white/50;
+}
+
+.field-error {
+  @apply mt-1 text-sm text-red-300;
+}
+
 .field-input {
   @apply w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30;
 }

@@ -1,4 +1,4 @@
-import { individualTicketChoices, packageChoices } from '../data/form';
+import { addonChoices, individualTicketChoices, packageChoices } from '../data/form';
 import { copy, pricing } from '../data/site';
 
 const TIMEZONE = 'Europe/Belgrade';
@@ -6,12 +6,14 @@ const TIMEZONE = 'Europe/Belgrade';
 /** Periods that accept online registration (Day of Event is door-only). */
 const ONLINE_REGISTRATION_PERIOD_IDS = new Set(['super-early', 'early', 'regular']);
 
+const MAIN_PERIOD_PACKAGE_NAMES = new Set(['Full Pass', 'Milonga Pass', 'Workshop Pass']);
+
 const PACKAGE_FORM_VALUES: Record<string, string> = {
-  'Full Pass': 'Full Pass: 4 Workshops & 3 Milongas',
+  'Full Pass': 'Full Pass: 3 Milongas + 4 Workshops',
   'Milonga Pass': 'Milonga Pass: 3 Milongas',
   'Workshop Pass': 'Workshop Pass: 4 Workshops',
   'Escenario Pass':
-    'Masterclass Pass: Escenario 1 & 2 (not part of Full Pass — subject to approval)',
+    'Masterclass: Escenario 1 & 2 (Masterclass registration is subject to approval.)',
 };
 
 export type PeriodStatus = 'upcoming' | 'active' | 'closed';
@@ -46,6 +48,7 @@ export type RegistrationState = {
   registrationClosedMessage: string;
   registrationNotOpenMessage: string;
   formPackages: FormPackageChoice[];
+  formEscenario: FormPackageChoice | null;
   allowedPackageValues: string[];
   ctaHref: string;
   ctaLabel: string;
@@ -53,11 +56,20 @@ export type RegistrationState = {
 
 export const registrationOpensOn = '2026-08-28';
 
+/**
+ * Staging: treat "today" as the public open date so the registration form is
+ * visible for Google Form / Sheet testing. Set to false before merging to main.
+ */
+const OPEN_REGISTRATION_FOR_TESTING = true;
+
 function resolveNow(asOf?: Date): Date {
   const override = import.meta.env.PUBLIC_REGISTRATION_NOW;
   if (typeof override === 'string' && override.trim()) {
     const parsed = new Date(`${override.trim()}T12:00:00`);
     if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+  if (OPEN_REGISTRATION_FOR_TESTING && !asOf) {
+    return new Date(`${registrationOpensOn}T12:00:00`);
   }
   return asOf ?? new Date();
 }
@@ -125,27 +137,45 @@ export function isIndividualTicketsAvailable(asOf?: Date): boolean {
   return today >= isoToDayNumber(getRegularPeriodStart());
 }
 
+function toFormChoice(
+  periodName: string,
+  pkg: { name: string; price: string },
+  labels: { value: string; label: string }[],
+): FormPackageChoice {
+  const formValue = PACKAGE_FORM_VALUES[pkg.name] ?? pkg.name;
+  const baseLabel = labels.find((choice) => choice.value === formValue)?.label ?? pkg.name;
+  return {
+    value: formValue,
+    label: `${baseLabel} — ${pkg.price} (${periodName})`,
+    price: pkg.price,
+  };
+}
+
 export function getPackagesForPeriod(periodId: string): FormPackageChoice[] {
   const period = getPeriodById(periodId);
   if (!period) return [];
 
-  return period.packages.map((pkg) => {
-    const formValue = PACKAGE_FORM_VALUES[pkg.name] ?? pkg.name;
-    const baseLabel = packageChoices.find((choice) => choice.value === formValue)?.label ?? pkg.name;
-    return {
-      value: formValue,
-      label: `${baseLabel} — ${pkg.price} (${period.name})`,
-      price: pkg.price,
-    };
-  });
+  return period.packages
+    .filter((pkg) => MAIN_PERIOD_PACKAGE_NAMES.has(pkg.name))
+    .map((pkg) => toFormChoice(period.name, pkg, [...packageChoices]));
+}
+
+export function getEscenarioForPeriod(periodId: string): FormPackageChoice | null {
+  const period = getPeriodById(periodId);
+  if (!period) return null;
+  const pkg = period.packages.find((item) => item.name === 'Escenario Pass');
+  if (!pkg) return null;
+  return toFormChoice(period.name, pkg, [...addonChoices]);
 }
 
 export function getAllowedPackageValuesForPeriod(periodId: string): string[] {
   const packages = getPackagesForPeriod(periodId).map((pkg) => pkg.value);
+  const escenario = getEscenarioForPeriod(periodId);
+  const allowed = escenario ? [...packages, escenario.value] : [...packages];
   if (periodId === 'regular' || periodId === 'day-of') {
-    return [...packages, ...individualTicketChoices.map((option) => option.value)];
+    return [...allowed, ...individualTicketChoices.map((option) => option.value)];
   }
-  return packages;
+  return allowed;
 }
 
 export function getDefaultPricingTab(asOf?: Date): string {
@@ -215,6 +245,9 @@ export function getRegistrationState(asOf?: Date): RegistrationState {
   const formPackages = activePeriodState
     ? getPackagesForPeriod(activePeriodState.id)
     : [];
+  const formEscenario = activePeriodState
+    ? getEscenarioForPeriod(activePeriodState.id)
+    : null;
 
   const allowedPackageValues = activePeriodState
     ? getAllowedPackageValuesForPeriod(activePeriodState.id)
@@ -238,6 +271,7 @@ export function getRegistrationState(asOf?: Date): RegistrationState {
       formatDisplayDate(registrationOpensOn),
     ),
     formPackages,
+    formEscenario,
     allowedPackageValues,
     ctaHref: isRegistrationOpen ? '#register' : '#tickets',
     ctaLabel: isRegistrationOpen ? copy.heroCtaRegister : copy.viewPrices,
