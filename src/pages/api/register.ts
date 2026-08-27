@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { submitRegistrationToGoogle } from '../../data/form';
+import { googleForm, submitRegistrationToGoogle } from '../../data/form';
 import {
   skipTurnstile,
   validateAndSanitizeRegistration,
@@ -59,6 +59,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   return Response.json({
     ok: true,
-    message: 'Your response has been recorded. A copy of your responses will be emailed to you.',
+    message: googleForm.successMessage,
   });
 };

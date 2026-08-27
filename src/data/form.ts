@@ -4,9 +4,8 @@ export const googleForm = {
     'https://docs.google.com/forms/d/e/1FAIpQLSfAhE6OsQgrGk3MkpnYeR5LrxdgGvNtnKcLj2tAaLjPPHCSSQ/viewform',
   submitUrl:
     'https://docs.google.com/forms/d/e/1FAIpQLSfAhE6OsQgrGk3MkpnYeR5LrxdgGvNtnKcLj2tAaLjPPHCSSQ/formResponse',
-  /** Shown after a successful submission (matches Google Forms behaviour). */
-  successMessage:
-    'Your response has been recorded. A copy of your responses will be emailed to you.',
+  /** Shown after a successful submission. */
+  successMessage: 'Your response has been recorded.',
 } as const;
 
 /**

@@ -7,11 +7,15 @@
  * 3. Deploy → New deployment → Type: Web app
  *      Execute as: Me
  *      Who has access: Anyone
+ *    After editing, use Manage deployments → Edit (pencil) → New version.
  * 4. Copy the web app URL into Vercel as GOOGLE_APPS_SCRIPT_URL, then redeploy.
  *
  * "Execute as Me" only lets THIS script append one form response / Sheet row.
  * Visitors never receive your Google login. They cannot open Drive, the Sheet,
  * or other files. The secret stops strangers from calling the URL if they find it.
+ *
+ * Collect-email must stay OFF. FormApp cannot fill Google's built-in email field,
+ * which throws "Invalid data updating form". The regular Email question still saves.
  */
 const FORM_ID = '11a5lco0iKT2nRjr2tRmCszmAQiE_KzMfpfdO7yOpj8A';
 const WEBHOOK_SECRET = 'PASTE_THE_SAME_VALUE_AS_GOOGLE_FORM_WEBHOOK_SECRET';
@@ -32,6 +36,14 @@ function doPost(e) {
     }
 
     const form = FormApp.openById(FORM_ID);
+    // Built-in collect-email cannot be set from Apps Script; it blocks submit().
+    form.setCollectEmail(false);
+    try {
+      form.setRequireLogin(false);
+    } catch (loginError) {
+      // Consumer Google accounts may not support this setting.
+    }
+
     const formResponse = form.createResponse();
 
     const valuesByTitle = {
@@ -65,30 +77,51 @@ function doPost(e) {
 }
 
 function applyItem_(formResponse, item, value) {
-  const type = String(item.getType());
+  const type = item.getType();
 
-  if (type === 'PAGE_BREAK' || type === 'SECTION_HEADER' || type === 'IMAGE' || type === 'VIDEO') {
+  if (
+    type === FormApp.ItemType.PAGE_BREAK ||
+    type === FormApp.ItemType.SECTION_HEADER ||
+    type === FormApp.ItemType.IMAGE ||
+    type === FormApp.ItemType.VIDEO
+  ) {
     return;
   }
 
-  if (type === 'MULTIPLE_CHOICE') {
-    formResponse.withItemResponse(item.asMultipleChoiceItem().createResponse(String(value)));
+  // Google's built-in collect-email item cannot be filled from a script.
+  if (FormApp.ItemType.EMAIL && type === FormApp.ItemType.EMAIL) {
     return;
   }
 
-  if (type === 'CHECKBOX') {
-    const choices = Array.isArray(value) ? value.map(String) : [String(value)];
-    formResponse.withItemResponse(item.asCheckboxItem().createResponse(choices));
-    return;
-  }
+  try {
+    if (type === FormApp.ItemType.MULTIPLE_CHOICE) {
+      formResponse.withItemResponse(item.asMultipleChoiceItem().createResponse(String(value)));
+      return;
+    }
 
-  if (type === 'PARAGRAPH_TEXT') {
-    formResponse.withItemResponse(item.asParagraphTextItem().createResponse(String(value)));
-    return;
-  }
+    if (type === FormApp.ItemType.CHECKBOX) {
+      const choices = Array.isArray(value) ? value.map(String) : [String(value)];
+      formResponse.withItemResponse(item.asCheckboxItem().createResponse(choices));
+      return;
+    }
 
-  // TEXT, EMAIL, and any other short-answer style question.
-  formResponse.withItemResponse(item.asTextItem().createResponse(String(value)));
+    if (type === FormApp.ItemType.PARAGRAPH_TEXT) {
+      formResponse.withItemResponse(item.asParagraphTextItem().createResponse(String(value)));
+      return;
+    }
+
+    if (type === FormApp.ItemType.LIST) {
+      formResponse.withItemResponse(item.asListItem().createResponse(String(value)));
+      return;
+    }
+
+    if (type === FormApp.ItemType.TEXT) {
+      formResponse.withItemResponse(item.asTextItem().createResponse(String(value)));
+      return;
+    }
+  } catch (error) {
+    throw new Error(item.getTitle() + ' (' + type + '): ' + error);
+  }
 }
 
 function json_(payload) {

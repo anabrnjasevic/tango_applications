@@ -30,7 +30,7 @@ export type RegistrationRequest = RegistrationPayload & {
   website?: string;
 };
 
-/** Skip Turnstile in local `astro dev`, or on a host that has no keys yet (staging before Turnstile). */
+/** Skip Turnstile in local `astro dev`, or on a host that has no keys yet. */
 export function skipTurnstile(): boolean {
   if (import.meta.env.DEV === true) return true;
   const siteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();

@@ -31,7 +31,9 @@ function updateCaminoRegistrationForm() {
     'Individual Masterclass: Escenario 2: Stage elements',
   ];
 
-  form.setCollectEmail(true);
+  // Must stay off: FormApp.createResponse() cannot fill Google's built-in
+  // collect-email field ("Invalid data updating form"). The Email question is enough.
+  form.setCollectEmail(false);
 
   let addonsItem = null;
   let packageItem = null;

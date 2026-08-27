@@ -56,20 +56,11 @@ export type RegistrationState = {
 
 export const registrationOpensOn = '2026-08-28';
 
-/**
- * Staging: treat "today" as the public open date so the registration form is
- * visible for Google Form / Sheet testing. Set to false before merging to main.
- */
-const OPEN_REGISTRATION_FOR_TESTING = true;
-
 function resolveNow(asOf?: Date): Date {
   const override = import.meta.env.PUBLIC_REGISTRATION_NOW;
   if (typeof override === 'string' && override.trim()) {
     const parsed = new Date(`${override.trim()}T12:00:00`);
     if (!Number.isNaN(parsed.getTime())) return parsed;
-  }
-  if (OPEN_REGISTRATION_FOR_TESTING && !asOf) {
-    return new Date(`${registrationOpensOn}T12:00:00`);
   }
   return asOf ?? new Date();
 }

@@ -38,7 +38,7 @@ PUBLIC_TURNSTILE_SITE_KEY=your_site_key
 TURNSTILE_SECRET_KEY=your_secret_key
 ```
 
-Add the same variables in Vercel project settings. Local `astro dev` skips Turnstile. Staging also skips Turnstile until both keys are set.
+Add the same variables in Vercel, plus `GOOGLE_APPS_SCRIPT_URL` and `GOOGLE_FORM_WEBHOOK_SECRET` (see `.env.example`). Local `astro dev` skips Turnstile. Hosts without Turnstile keys skip it too.
 
 ## Deploy to Vercel
 
