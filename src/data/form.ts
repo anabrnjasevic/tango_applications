@@ -392,9 +392,88 @@ export function parseGoogleFormResponse(
   };
 }
 
+function envValue(name: string): string {
+  const fromImport = (import.meta.env as Record<string, string | undefined>)[name];
+  const fromProcess = typeof process !== 'undefined' ? process.env[name] : undefined;
+  return String(fromImport ?? fromProcess ?? '').trim();
+}
+
+function appsScriptWebhook(): { url: string; secret: string } | null {
+  const url = envValue('GOOGLE_APPS_SCRIPT_URL');
+  const secret = envValue('GOOGLE_FORM_WEBHOOK_SECRET');
+  if (!url || !secret) return null;
+  return { url, secret };
+}
+
+function webhookPayload(data: RegistrationPayload, secret: string) {
+  const mainPackages = data.packages.filter(isMainPackageValue);
+  const addons = data.packages.filter(isAddonPackageValue);
+
+  return {
+    secret,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    location: data.location,
+    dancingYears: data.dancingYears,
+    performed: data.performed,
+    instructor: data.instructor,
+    role: data.role,
+    partnerName: data.partnerName ?? '',
+    package: mainPackages[0] ?? '',
+    addons,
+    notes: data.notes ?? '',
+  };
+}
+
+async function submitViaAppsScript(
+  data: RegistrationPayload,
+  webhook: { url: string; secret: string },
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const response = await fetch(webhook.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(webhookPayload(data, webhook.secret)),
+    redirect: 'follow',
+  });
+
+  const text = await response.text();
+  let parsed: { ok?: boolean; error?: string } | null = null;
+  try {
+    parsed = JSON.parse(text) as { ok?: boolean; error?: string };
+  } catch {
+    parsed = null;
+  }
+
+  if (parsed?.ok === true) return { ok: true };
+
+  if (/accounts\.google|sign in to continue/i.test(text)) {
+    return {
+      ok: false,
+      error: 'The Apps Script web app is not set to Anyone access. Redeploy it and choose Who has access: Anyone.',
+    };
+  }
+
+  console.error('[google-form] Apps Script webhook failed', response.status, text.slice(0, 500));
+  return {
+    ok: false,
+    error: parsed?.error?.trim() || 'Could not save the registration. Please try again.',
+  };
+}
+
 export async function submitRegistrationToGoogle(
   data: RegistrationPayload,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  const webhook = appsScriptWebhook();
+  if (webhook) {
+    try {
+      return await submitViaAppsScript(data, webhook);
+    } catch (error) {
+      console.error('[google-form] Apps Script webhook threw', error);
+      return { ok: false, error: 'Could not reach the registration sheet. Please try again.' };
+    }
+  }
+
   try {
     const session = await fetchGoogleFormSession();
     const body = buildGoogleFormBody(data, session);
