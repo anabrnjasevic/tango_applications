@@ -54,7 +54,15 @@ export const POST: APIRoute = async ({ request }) => {
 
   const googleResult = await submitRegistrationToGoogle(validation.data);
   if (!googleResult.ok) {
-    return Response.json({ ok: false, error: googleResult.error }, { status: 502 });
+    console.error('[register] Google submit failed', googleResult.error);
+    return Response.json(
+      {
+        ok: false,
+        error:
+          'We could not complete your registration. Please try again, or contact us if you are having trouble.',
+      },
+      { status: 502 },
+    );
   }
 
   return Response.json({

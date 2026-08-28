@@ -1,14 +1,13 @@
 ---
 import {
   dancingYearsOptions,
-  googleForm,
   individualTicketGroups,
   roleOptions,
   yesNoOptions,
 } from '../data/form';
 import { fieldLimits, skipTurnstile } from '../lib/form-security';
 import { getRegistrationState } from '../lib/registration-schedule';
-import { showDisabledIndividualTickets } from '../data/site';
+import { copy, showDisabledIndividualTickets, site } from '../data/site';
 
 const registration = getRegistrationState();
 const turnstileOff = skipTurnstile();
@@ -37,6 +36,36 @@ const canSubmit = turnstileOff || turnstileRequired;
       </a>
     </div>
   ) : (
+    <>
+    <div
+      id="registration-success"
+      class="hidden px-2 py-6 text-center"
+      role="status"
+      aria-live="assertive"
+      aria-hidden="true"
+    >
+      <div
+        class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-brand/20 text-brand-light"
+        aria-hidden="true"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-9 w-9" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h3 class="font-display text-3xl text-brand-light md:text-4xl">
+        {copy.registerSuccessHeadline}
+      </h3>
+      <p class="mx-auto mt-4 max-w-lg text-lg text-white/80">{copy.registerSuccessBody}</p>
+      <p class="mt-4 text-base font-semibold text-white">{copy.registerSuccessDoNotResubmit}</p>
+      <p class="mx-auto mt-6 max-w-lg text-white/70">
+        {copy.registerContactHelp}
+        {' '}
+        <a href={`mailto:${site.contactEmail}`} class="font-semibold text-brand-light hover:text-brand">
+          {site.contactEmail}
+        </a>.
+      </p>
+    </div>
+
     <form id="registration-form" class="space-y-8" novalidate>
       <fieldset class="space-y-4">
         <legend class="font-display text-2xl text-brand-light">Contact information</legend>
@@ -213,7 +242,22 @@ const canSubmit = turnstileOff || turnstileRequired;
         )
       }
 
-      <p id="form-message" class="hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></p>
+      <div
+        id="form-message"
+        class="hidden rounded-2xl border px-5 py-4"
+        role="alert"
+        aria-live="assertive"
+      >
+        <p id="form-message-title" class="font-display text-xl"></p>
+        <p id="form-message-text" class="mt-2 text-base leading-relaxed"></p>
+        <p id="form-message-contact" class="mt-3 hidden text-sm leading-relaxed">
+          {copy.registerContactHelp}
+          {' '}
+          <a href={`mailto:${site.contactEmail}`} class="font-semibold underline underline-offset-2">
+            {site.contactEmail}
+          </a>.
+        </p>
+      </div>
 
       <button
         type="submit"
@@ -223,6 +267,7 @@ const canSubmit = turnstileOff || turnstileRequired;
         Submit application
       </button>
     </form>
+    </>
   )
 }
 
@@ -234,36 +279,70 @@ const canSubmit = turnstileOff || turnstileRequired;
 
 <script
   define:vars={{
-    successMessage: googleForm.successMessage,
     coupleOptionValue: roleOptions.find((option) => option.needsPartner)?.value ?? '',
     turnstileRequired,
     registrationOpen: registration.isRegistrationOpen,
     individualsAvailable: registration.individualTicketsAvailable,
+    errorHeadline: copy.registerErrorHeadline,
   }}
 >
   const form = document.getElementById('registration-form');
+  const successPanel = document.getElementById('registration-success');
   const message = document.getElementById('form-message');
+  const messageTitle = document.getElementById('form-message-title');
+  const messageText = document.getElementById('form-message-text');
+  const messageContact = document.getElementById('form-message-contact');
   const partnerField = document.getElementById('partner-field');
   const partnerInput = form?.querySelector('input[name="partnerName"]');
   const packageError = document.getElementById('package-error');
+  const submitButton = form?.querySelector('button[type="submit"]');
+  const defaultSubmitLabel = submitButton?.textContent ?? 'Submit application';
 
-  function setMessage(text, type) {
+  function hideMessage() {
     if (!message) return;
-    message.textContent = text;
+    message.classList.add('hidden');
+    messageContact?.classList.add('hidden');
+  }
+
+  function showError(text, { showContact = false, title = errorHeadline } = {}) {
+    if (!message || !messageTitle || !messageText) return;
     message.classList.remove(
       'hidden',
       'border-brand/40',
       'bg-brand/10',
       'text-brand-light',
-      'border-red-400/40',
-      'bg-red-500/10',
-      'text-red-200',
     );
-    if (type === 'success') {
-      message.classList.add('border-brand/40', 'bg-brand/10', 'text-brand-light');
-    } else {
-      message.classList.add('border-red-400/40', 'bg-red-500/10', 'text-red-200');
+    message.classList.add('border-red-400/50', 'bg-red-500/15', 'text-red-100');
+    messageTitle.textContent = title;
+    messageText.textContent = text;
+    messageContact?.classList.toggle('hidden', !showContact);
+    message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function showSending() {
+    hideMessage();
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending…';
     }
+  }
+
+  function restoreSubmit() {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = defaultSubmitLabel;
+    }
+  }
+
+  function showSuccess() {
+    const intro = document.getElementById('register-intro');
+    form?.classList.add('hidden');
+    form?.setAttribute('aria-hidden', 'true');
+    form?.setAttribute('inert', '');
+    successPanel?.classList.remove('hidden');
+    successPanel?.setAttribute('aria-hidden', 'false');
+    intro?.classList.add('hidden');
+    successPanel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function setPackageError(text) {
@@ -303,9 +382,10 @@ const canSubmit = turnstileOff || turnstileRequired;
     if (!form || !registrationOpen) return;
 
     setPackageError('');
+    hideMessage();
 
     if (!form.reportValidity()) {
-      setMessage('Please fill in all required fields.', 'error');
+      showError('Please fill in all required fields.', { title: 'Missing information' });
       return;
     }
 
@@ -316,7 +396,7 @@ const canSubmit = turnstileOff || turnstileRequired;
         ? 'Please choose a package or at least one add-on.'
         : 'Please choose a package or Escenario. Individual tickets open on 8 September.';
       setPackageError(errorText);
-      setMessage(errorText, 'error');
+      showError(errorText, { title: 'Missing information' });
       return;
     }
 
@@ -325,7 +405,7 @@ const canSubmit = turnstileOff || turnstileRequired;
       : 'dev-skip';
 
     if (turnstileRequired && !turnstileToken) {
-      setMessage('Please complete the security check.', 'error');
+      showError('Please complete the security check.', { title: 'Missing information' });
       return;
     }
 
@@ -347,13 +427,11 @@ const canSubmit = turnstileOff || turnstileRequired;
     };
 
     if (payload.role === coupleOptionValue && !payload.partnerName.trim()) {
-      setMessage('Please enter your partner\'s name.', 'error');
+      showError("Please enter your partner's name.", { title: 'Missing information' });
       return;
     }
 
-    const submitButton = form.querySelector('button[type="submit"]');
-    if (submitButton) submitButton.disabled = true;
-    setMessage('Sending…', 'success');
+    showSending();
 
     try {
       const registerResponse = await fetch('/api/register', {
@@ -365,21 +443,20 @@ const canSubmit = turnstileOff || turnstileRequired;
       const registerResult = await registerResponse.json();
 
       if (!registerResponse.ok || !registerResult.ok) {
-        setMessage(registerResult.error ?? 'Something went wrong. Please try again.', 'error');
+        restoreSubmit();
         window.turnstile?.reset?.();
+        showError(
+          registerResult.error ?? 'Something went wrong. Please try again.',
+          { showContact: true },
+        );
         return;
       }
 
-      form.reset();
-      updatePartnerField();
-      setPackageError('');
-      window.turnstile?.reset?.();
-      setMessage(registerResult.message ?? successMessage, 'success');
+      showSuccess();
     } catch {
-      setMessage('Could not submit the form. Please refresh and try again.', 'error');
+      restoreSubmit();
       window.turnstile?.reset?.();
-    } finally {
-      if (submitButton) submitButton.disabled = false;
+      showError('Could not submit the form. Please refresh and try again.', { showContact: true });
     }
   });
 </script>

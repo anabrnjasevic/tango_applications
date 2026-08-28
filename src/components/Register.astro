@@ -10,7 +10,7 @@ const registration = getRegistrationState();
   <div class="mx-auto max-w-3xl">
     <div class="mb-10 text-center" data-reveal="fade">
       <h2 class="font-display text-4xl text-white md:text-6xl">{copy.registerHeadline}</h2>
-      <p class="mt-4 text-lg text-white/70">
+      <p id="register-intro" class="mt-4 text-lg text-white/70">
         {
           registration.isRegistrationOpen
             ? copy.registerIntro

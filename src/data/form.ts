@@ -5,7 +5,7 @@ export const googleForm = {
   submitUrl:
     'https://docs.google.com/forms/d/e/1FAIpQLSfAhE6OsQgrGk3MkpnYeR5LrxdgGvNtnKcLj2tAaLjPPHCSSQ/formResponse',
   /** Shown after a successful submission. */
-  successMessage: 'Your response has been recorded.',
+  successMessage: 'Your registration was successful!',
 } as const;
 
 /**
