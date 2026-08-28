@@ -64,6 +64,9 @@ const canSubmit = turnstileOff || turnstileRequired;
           {site.contactEmail}
         </a>.
       </p>
+      <button type="button" id="register-again" class="btn-outline mt-8">
+        {copy.registerAgain}
+      </button>
     </div>
 
     <form id="registration-form" class="space-y-8" novalidate>
@@ -144,10 +147,12 @@ const canSubmit = turnstileOff || turnstileRequired;
             </label>
           ))
         }
-        <label id="partner-field" class="field hidden">
-          <span class="field-label">Partner's surname and name *</span>
-          <input type="text" name="partnerName" maxlength={fieldLimits.partnerName} class="field-input" />
-        </label>
+        <div id="partner-field" class="hidden">
+          <label class="field">
+            <span class="field-label">Partner's surname and name *</span>
+            <input type="text" name="partnerName" maxlength={fieldLimits.partnerName} class="field-input" />
+          </label>
+        </div>
       </fieldset>
 
       <fieldset id="package-fieldset" class="space-y-3">
@@ -297,6 +302,7 @@ const canSubmit = turnstileOff || turnstileRequired;
   const packageError = document.getElementById('package-error');
   const submitButton = form?.querySelector('button[type="submit"]');
   const defaultSubmitLabel = submitButton?.textContent ?? 'Submit application';
+  const registerAgain = document.getElementById('register-again');
 
   function hideMessage() {
     if (!message) return;
@@ -345,6 +351,23 @@ const canSubmit = turnstileOff || turnstileRequired;
     successPanel?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  function showFormAgain() {
+    const intro = document.getElementById('register-intro');
+    form?.reset();
+    updatePartnerField();
+    setPackageError('');
+    hideMessage();
+    restoreSubmit();
+    window.turnstile?.reset?.();
+    form?.classList.remove('hidden');
+    form?.removeAttribute('aria-hidden');
+    form?.removeAttribute('inert');
+    successPanel?.classList.add('hidden');
+    successPanel?.setAttribute('aria-hidden', 'true');
+    intro?.classList.remove('hidden');
+    form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function setPackageError(text) {
     if (!packageError) return;
     packageError.textContent = text ?? '';
@@ -364,6 +387,7 @@ const canSubmit = turnstileOff || turnstileRequired;
   form?.querySelectorAll('input[name="role"]').forEach((input) => {
     input.addEventListener('change', updatePartnerField);
   });
+  registerAgain?.addEventListener('click', showFormAgain);
 
   function selectedProducts() {
     const main = form?.querySelector('input[name="package"]:checked');

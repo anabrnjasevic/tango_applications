@@ -71,6 +71,7 @@ export const copy = {
   registerSuccessHeadline: 'Your registration was successful!',
   registerSuccessBody: "We've received your application.",
   registerSuccessDoNotResubmit: 'Please do not submit the form again.',
+  registerAgain: 'Register again',
   registerErrorHeadline: 'Registration could not be sent',
   registerContactHelp: 'If you are having trouble, contact us at',
   registrationNotOpenYet: 'Registration opens {date}. Compare prices above.',
