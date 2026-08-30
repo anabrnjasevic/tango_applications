@@ -169,6 +169,7 @@ export function validateAndSanitizeRegistration(input: unknown): ValidationResul
     packages: uniquePackages,
     ...(partnerName ? { partnerName } : {}),
     ...(noteParts.length ? { notes: noteParts.join('\n\n') } : {}),
+    ...(registration.activePeriodId ? { periodId: registration.activePeriodId } : {}),
   };
 
   if (!data.name || !data.phone || !data.location) {

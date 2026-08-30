@@ -5,7 +5,8 @@ export const googleForm = {
   submitUrl:
     'https://docs.google.com/forms/d/e/1FAIpQLSfAhE6OsQgrGk3MkpnYeR5LrxdgGvNtnKcLj2tAaLjPPHCSSQ/formResponse',
   /** Shown after a successful submission. */
-  successMessage: 'Your registration was successful!',
+  successMessage:
+    'We have received your application. Please check your email for a confirmation — including the spam or junk folder.',
 } as const;
 
 /**
@@ -154,6 +155,7 @@ export type RegistrationPayload = {
   partnerName?: string;
   packages: string[];
   notes?: string;
+  periodId?: string;
 };
 
 export type GoogleFormEntries = {
@@ -422,6 +424,7 @@ function webhookPayload(data: RegistrationPayload, secret: string) {
     package: mainPackages[0] ?? '',
     addons,
     notes: data.notes ?? '',
+    periodId: data.periodId ?? '',
   };
 }
 

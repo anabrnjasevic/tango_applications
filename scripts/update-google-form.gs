@@ -46,6 +46,14 @@ function updateCaminoRegistrationForm() {
     if (title === 'Choose your package') {
       packageItem = item.asMultipleChoiceItem();
     }
+    if (title === 'Email') {
+      const type = item.getType();
+      if (type === FormApp.ItemType.TEXT) {
+        item.asTextItem().setRequired(true);
+      } else if (type === FormApp.ItemType.PARAGRAPH_TEXT) {
+        item.asParagraphTextItem().setRequired(true);
+      }
+    }
   });
 
   if (!addonsItem) {

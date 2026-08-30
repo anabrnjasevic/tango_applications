@@ -69,11 +69,12 @@ export const copy = {
   registerHeadline: 'Register',
   registerIntro: 'Complete the form below to register for the weekend.',
   registerSuccessHeadline: 'Your registration was successful!',
-  registerSuccessBody: "We've received your application.",
+  registerSuccessBody:
+    'We have received your application. Please check your email for a confirmation — including the spam or junk folder.',
   registerSuccessDoNotResubmit: 'Please do not submit the form again.',
   registerAgain: 'Register again',
   registerErrorHeadline: 'Registration could not be sent',
-  registerContactHelp: 'If you are having trouble, contact us at',
+  registerContactHelp: 'If you have any problems, contact us at',
   registrationNotOpenYet: 'Registration opens {date}. Compare prices above.',
   registrationClosedOnline:
     'Online registration has closed. Door registration is available at the event.',
